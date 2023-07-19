@@ -1,8 +1,10 @@
 // Import necessary modules and constants
-const { app, PORT } = require("./server");
+var { app, PORT, HOST } = require("./server");
 
-// Starting the server and listening on the specified port
-app.listen(PORT, () => {
-  // callback function executed when the server starts successfully
-  console.log("Express server is running on port " + PORT);
+// Starting the server and listening on the specified host and port
+app.listen(PORT, HOST, () => {
+  // function will be executed when the server starts successfully
+  console.log(`
+    ExpressJS API is now running!
+    `);
 });
