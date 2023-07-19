@@ -4,25 +4,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { makeStyles } from '@mui/styles';
 
-const useStyles = makeStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: '20px', // space between elements
-      width: '100%', // full width
-      padding: '20px', // padding around the form
-    },
-    input: {
-      width: '100%', // full width
-    },
-    button: {
-      width: '100%', // full width
-    },
-  });
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');

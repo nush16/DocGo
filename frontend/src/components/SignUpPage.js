@@ -7,7 +7,7 @@ import SignUpForm from './SignUpForm';
 const SignUpPage = () => {
   return (
     <Box>
-      <TopBar title="Logo" buttonLabel="Create Your Business" link="/signup" />
+      <TopBar title="Logo" buttonLabel="Log in" link="/" />
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <SignUpForm />
