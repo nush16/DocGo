@@ -1,22 +1,33 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
+import { Box, Grid, Typography, useTheme, useMediaQuery } from '@mui/material';
 import TopBar from './TopBar';
 import LoginForm from './LoginForm';
 
 const HomePage = () => {
+  // useTheme provides the default MUI theme
+  const theme = useTheme();
+  // useMediaQuery is a CSS media query hook that listens for matches to a CSS media query
+  // It returns true if the document matches the query, and false if not
+  // theme.breakpoints.down('sm') corresponds to a max-width media feature of 600px (tablet)
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
-    <Box>
+    <Box sx={{ flexGrow: 1 }}>
       <TopBar title="Logo" buttonLabel="Create Business" link="/signup" />
-      <Grid container spacing={2}>
+      {/* Grid container to arrange items, justify content for horizontal alignment & align items for vertical alignment */}
+      <Grid container justifyContent={isMobile ? "center" : "space-between"} alignItems="center" style={{ padding: '2em 0' }}>
+        {/* If the screen size is smaller than 'sm', we render the Typography at center else at left */}
         <Grid item xs={12} sm={6}>
-          <Typography variant="h4">
+          <Typography variant={isMobile ? "h4" : "h2"} align="center">
             Welcome Words
           </Typography>
         </Grid>
+        {/* Grid item for LoginForm component */}
         <Grid item xs={12} sm={6}>
-          <LoginForm />
+          {/* Box to apply additional CSS to LoginForm, in this case, center alignment */}
+          <Box display="flex" justifyContent="center">
+            <LoginForm />
+          </Box>
         </Grid>
       </Grid>
     </Box>
