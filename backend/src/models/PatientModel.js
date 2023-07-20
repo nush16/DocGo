@@ -15,5 +15,5 @@ const PatientSchema = new mongoose.Schema({
 // Create a Mongoose model named "Patient" based on the "PatientSchema"
 const Patient = mongoose.model("Patient", PatientSchema);
 
-// Export the "Patient"model to make it accessible from other parts of the application
+// Export the "Patient" model to make it accessible from other parts of the application
 module.exports = { Patient };
