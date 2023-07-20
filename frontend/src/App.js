@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TopBar from './components/TopBar';
 import HomePage from './components/HomePage';
 import SignUpPage from './components/SignUpPage';
-import ForgotPassword from './components/ForgotPasswordPage';
 import ForgotPasswordPage from './components/ForgotPasswordPage';
 
 function App() {

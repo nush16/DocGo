@@ -36,6 +36,9 @@ const ForgotPassword = () => {
       <Typography variant="h5" gutterBottom>
         Forgot Password
       </Typography>
+      <Typography variant="h6" >
+      Lost your password? Please enter email address.
+      </Typography>      
       <form onSubmit={handleSubmit}>
         <StyledTextField
           fullWidth

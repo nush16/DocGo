@@ -60,7 +60,7 @@ const LoginForm = () => {
           Sign In
         </Button>
         <Typography style={{ marginTop: '20px', cursor: 'pointer', textDecoration: 'underline' }}>
-          <Link to="/forgetpassword" style={{ color: 'inherit', textDecoration: 'inherit'}}>
+          <Link to="/forgotpassword" style={{ color: 'inherit', textDecoration: 'inherit'}}>
             Forgot Password?
           </Link>
         </Typography>
