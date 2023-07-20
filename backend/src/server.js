@@ -4,6 +4,7 @@ dotenv.config();
 
 // Import the Express package and configure some needed data.
 const express = require("express");
+const mongoose = require("mongoose");
 const app = express();
 
 // If no process.env.X is found, assign a default value instead.
@@ -40,6 +41,64 @@ app.use(cors(corsOptions));
 // Configure some API-friendly request data formatting.
 app.use(express.json()); // Parse JSON request bodies.
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies.
+
+// Initialize the variable to store the database URL
+var databaseURL = "";
+
+// Determine the appropriate database URL based on the environment
+switch (process.env.NODE_ENV.toLowerCase()) {
+  case "test":
+    // If the environment is "test", use the corresponding test database URL
+    databaseURL = "mongodb://localhost:27017/ExpressBuildAnAPI-test";
+    break;
+  case "development":
+    // If the environment is "development", use the corresponding development database URL
+    databaseURL = "mongodb://localhost:27017/ExpressBuildAnAPI-dev";
+    break;
+  case "production":
+    // If the environment is "production", use the database URL provided via the environment variable
+    databaseURL = process.env.DATABASE_URL;
+    break;
+  default:
+    // If an incorrect environment is specified, log an error and don't connect to the database
+    console.error(
+      "Incorrect JS environment specified, database will not be connected."
+    );
+    break;
+}
+
+// Import the databaseConnector function from the './database' module
+const { databaseConnector } = require("./database");
+
+// Connect to the database using the determined URL
+databaseConnector(databaseURL)
+  .then(() => {
+    console.log("Database connected successfully!");
+  })
+  .catch((error) => {
+    // If there's an error connecting to the database, log the error
+    console.log(`
+    Some error occurred connecting to the database! It was: 
+    ${error}
+    `);
+  });
+
+// API endpoint to retrieve database health information
+app.get("/databaseHealth", (request, response) => {
+  // Get various details about the database connection
+  let databaseState = mongoose.connection.readyState;
+  let databaseName = mongoose.connection.name;
+  let databaseModels = mongoose.connection.modelNames();
+  let databaseHost = mongoose.connection.host;
+
+  // Respond with a JSON containing the database health information
+  response.json({
+    readyState: databaseState,
+    dbName: databaseName,
+    dbModels: databaseModels,
+    dbHost: databaseHost,
+  });
+});
 
 // Add a route just to make sure things work.
 // This path is the server API's "homepage".
