@@ -1,15 +1,16 @@
-// Make the .env data ready for use.
+// Load environment variables from .env file
 const dotenv = require("dotenv");
 dotenv.config();
 
-// Import the Express package and configure some needed data.
+// Import the Express package and create the app instance
 const express = require("express");
 const app = express();
-// If no process.env.X is found, assign a default value instead.
+
+// Set default values for HOST and PORT from environment variables, if not specified
 const HOST = process.env.HOST || "localhost";
 const PORT = process.env.PORT || 3000;
 
-// Configure some basic Helmet settings on the server instance.
+// Helmet middleware for enhancing server security
 const helmet = require("helmet");
 app.use(helmet());
 app.use(helmet.permittedCrossDomainPolicies());
@@ -22,33 +23,30 @@ app.use(
   })
 );
 
-// Configure some basic CORS settings on the server instance.
-// These origin values don't actually have to be anything -
-// this project exists without a front-end, but any front-end
-// that should interact with this API should be listed in the
-// array of origins for CORS configuration.
+// CORS middleware for handling cross-origin requests
 const cors = require("cors");
-var corsOptions = {
-  origin: ["http://localhost:5000", "https://deployedApp.com"],
-  optionsSuccessStatus: 200,
+const corsOptions = {
+  origin: ["http://localhost:3000"], // Allow requests from this origin
+  optionsSuccessStatus: 200, // Set the HTTP status code for successful CORS preflight requests
 };
 app.use(cors(corsOptions));
 
-// Configure some API-friendly request data formatting.
+// Middleware to parse request data as JSON and URL-encoded
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Import and configure Mongoose for MongoDB
 const mongoose = require("mongoose");
 var databaseURL = "";
 switch (process.env.NODE_ENV.toLowerCase()) {
   case "test":
-    databaseURL = "mongodb://localhost:27017/ExpressBuildAnAPI-test";
+    databaseURL = "mongodb://localhost:27017/ExpressBuildAnAPI-test"; // Test database URL
     break;
   case "development":
-    databaseURL = "mongodb://localhost:27017/ExpressBuildAnAPI-dev";
+    databaseURL = process.env.DATABASE_URL; // Development database URL
     break;
   case "production":
-    databaseURL = process.env.DATABASE_URL;
+    databaseURL = process.env.DATABASE_URL; // Production database URL
     break;
   default:
     console.error(
@@ -67,9 +65,8 @@ databaseConnector(databaseURL)
     ${error}
     `);
   });
-// Return a bunch of useful details from the database connection
-// Dig into each property here:
-// https://mongoosejs.com/docs/api/connection.html
+
+// Route to check the health of the database connection
 app.get("/databaseHealth", (request, response) => {
   let databaseState = mongoose.connection.readyState;
   let databaseName = mongoose.connection.name;
@@ -84,47 +81,14 @@ app.get("/databaseHealth", (request, response) => {
   });
 });
 
-app.get("/databaseDump", async (request, response) => {
-  // Set up an object to store our data.
-  const dumpContainer = {};
-
-  // Get the names of all collections in the DB.
-  var collections = await mongoose.connection.db.listCollections().toArray();
-  collections = collections.map((collection) => collection.name);
-
-  // For each collection, get all their data and add it to the dumpContainer.
-  for (const collectionName of collections) {
-    let collectionData = await mongoose.connection.db
-      .collection(collectionName)
-      .find({})
-      .toArray();
-    dumpContainer[collectionName] = collectionData;
-  }
-
-  // Confirm in the terminal that the server is returning the right data.
-  // With pretty formatting too, via JSON.stringify(value, null, spacing for indentation).
-  console.log(
-    "Dumping all of this data to the client: \n" +
-      JSON.stringify(dumpContainer, null, 4)
-  );
-
-  // Return the big data object.
-  response.json({
-    data: dumpContainer,
-  });
-});
-
-// Add a route just to make sure things work.
-// This path is the server API's "homepage".
+// Route for the homepage
 app.get("/", (request, response) => {
   response.json({
     message: "Hello world!",
   });
 });
 
-// Keep this route at the end of this file, only before the module.exports!
-// A 404 route should only trigger if no preceding routes or middleware was run.
-// So, put this below where any other routes are placed within this file.
+// Route for handling 404 errors (no route found)
 app.get("*", (request, response) => {
   response.status(404).json({
     message: "No route with that path found!",
@@ -132,7 +96,7 @@ app.get("*", (request, response) => {
   });
 });
 
-// Export everything needed to run the server.
+// Export necessary data to run the server
 module.exports = {
   HOST,
   PORT,

@@ -3,9 +3,8 @@ const mongoose = require("mongoose");
 
 // Define the Mongoose schema for the "User" entity
 const UserSchema = new mongoose.Schema({
-  email: String, // Property for storing the email (expects a string)
-  password: String, // Property for storing the password (expects a string)
-  role: { type: mongoose.Types.ObjectId, ref: "Role" },
+  email: { type: Schema.ObjectId, ref: "SignUp", required: true }, // Property for storing the email (expects a string)
+  password: { type: Schema.ObjectId, ref: "SignUp", required: true }, // Property for storing the password (expects a string)
 });
 
 // Create a Mongoose model named ""User" based on the "UserSchema"
