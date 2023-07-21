@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const UserSchema = new mongoose.Schema({
   email: String, // Property for storing the email (expects a string)
   password: String, // Property for storing the password (expects a string)
+  role: { type: mongoose.Types.ObjectId, ref: "Role" },
 });
 
 // Create a Mongoose model named ""User" based on the "UserSchema"
