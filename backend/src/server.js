@@ -88,6 +88,22 @@ app.get("/", (request, response) => {
   });
 });
 
+// Import the appointment router
+const appointmentRouter = require("./routes/appointment_router");
+// Import the patient router
+const patientRouter = require("./routes/patient_router");
+// Import the doctor router
+const doctorRouter = require("./routes/doctor_router");
+
+// Use the appointment router for all /appointments routes
+app.use("/appointments", appointmentRouter);
+
+// Use the patient router for all /patients routes
+app.use("/patients", patientRouter);
+
+// Use the doctor router for all /doctors routes
+app.use("/doctors", doctorRouter);
+
 // Route for handling 404 errors (no route found)
 app.get("*", (request, response) => {
   response.status(404).json({
