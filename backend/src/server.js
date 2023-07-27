@@ -7,7 +7,7 @@ const express = require("express");
 const app = express();
 
 // Set default values for HOST and PORT from environment variables, if not specified
-const HOST = process.env.HOST || "localhost";
+const HOST = process.env.HOST || "127.0.0.1";
 const PORT = process.env.PORT || 3000;
 
 // Helmet middleware for enhancing server security
@@ -40,10 +40,10 @@ const mongoose = require("mongoose");
 var databaseURL = "";
 switch (process.env.NODE_ENV.toLowerCase()) {
   case "test":
-    databaseURL = "mongodb://localhost:27017/ExpressBuildAnAPI-test"; // Test database URL
+    databaseURL = "mongodb://localhost:27017/docgo_db_test"; // Test database URL
     break;
   case "development":
-    databaseURL = process.env.DATABASE_URL; // Development database URL
+    databaseURL = "mongodb://localhost:27017/docgo_db"; // Development database URL
     break;
   case "production":
     databaseURL = process.env.DATABASE_URL; // Production database URL
@@ -88,21 +88,33 @@ app.get("/", (request, response) => {
   });
 });
 
-// Import the appointment router
-const appointmentRouter = require("./routes/appointment_router");
-// Import the patient router
-const patientRouter = require("./routes/patient_router");
-// Import the doctor router
-const doctorRouter = require("./routes/doctor_router");
+// // Import the signup router
+const signupRouter = require("./routes/signup_router");
 
-// Use the appointment router for all /appointments routes
-app.use("/appointments", appointmentRouter);
+// // Import the user router
+const userRouter = require("./routes/user_router");
 
-// Use the patient router for all /patients routes
-app.use("/patients", patientRouter);
+// // Import the appointment router
+// const appointmentRouter = require("./routes/appointment_router");
+// // Import the patient router
+// const patientRouter = require("./routes/patient_router");
+// // Import the doctor router
+// const doctorRouter = require("./routes/doctor_router");
 
-// Use the doctor router for all /doctors routes
-app.use("/doctors", doctorRouter);
+// Use the signup router for all /signup routes
+app.use("/", signupRouter);
+
+// Use the user router for all /user routes
+app.use("/", userRouter);
+
+// // Use the appointment router for all /appointments routes
+// app.use("/appointments", appointmentRouter);
+
+// // Use the patient router for all /patients routes
+// app.use("/patients", patientRouter);
+
+// // Use the doctor router for all /doctors routes
+// app.use("/doctors", doctorRouter);
 
 // Route for handling 404 errors (no route found)
 app.get("*", (request, response) => {

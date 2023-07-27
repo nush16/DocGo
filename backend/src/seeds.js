@@ -93,3 +93,50 @@
 //     mongoose.connection.close();
 //     console.log("DB seed connection closed.");
 //   });
+
+// Import the Mongoose models for User and SignUp
+const mongoose = require("mongoose");
+const { User } = require("./models/user_model");
+const { SignUp } = require("./models/signup_model");
+
+// Function to seed data into the database
+const seedData = async () => {
+  try {
+    // Seed Users
+    const users = [
+      { email: "user1@example.com", password: "password1" },
+      { email: "user2@example.com", password: "password2" },
+    ];
+    const seededUsers = await User.create(users);
+
+    // Seed SignUps
+    const signUps = [
+      {
+        first_name: "John",
+        last_name: "Doe",
+        business_name: "ABC Corp",
+        email: "john.doe@example.com",
+        phone: "1234567890",
+        user: seededUsers[0]._id, // Reference the first user for the SignUp
+      },
+      {
+        first_name: "Jane",
+        last_name: "Smith",
+        business_name: "XYZ Inc",
+        email: "jane.smith@example.com",
+        phone: "9876543210",
+        user: seededUsers[1]._id, // Reference the second user for the SignUp
+      },
+    ];
+    await SignUp.create(signUps);
+
+    console.log("Data seeded successfully!");
+  } catch (error) {
+    console.error("Error seeding data:", error);
+  } finally {
+    // Close the Mongoose connection after seeding the data
+    mongoose.connection.close();
+  }
+};
+
+module.exports = seedData;
