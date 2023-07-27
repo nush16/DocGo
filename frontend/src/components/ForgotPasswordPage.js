@@ -16,7 +16,7 @@ const StyledGrid = styled(Grid)({
 const ForgotPasswordPage = () => {
   return (
     <Box>
-      <TopBar title="Logo" buttonLabel="Log in" link="/" />
+      <TopBar buttonLabel="Log in" link="/" hideMenuButton={true} alwaysShowLogo={true} />
       <StyledGrid container>
         <Grid item xs={12} sm={6}>
           <ForgotPassword />

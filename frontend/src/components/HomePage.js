@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, Typography, useTheme, useMediaQuery } from '@mui/material';
+import { Box, Grid, Typography, useTheme, useMediaQuery, Toolbar } from '@mui/material';
 import TopBar from './TopBar';
 import LoginForm from './LoginForm';
 
@@ -13,17 +13,17 @@ const HomePage = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <TopBar buttonLabel="Create Business" link="/signup" />
+      <TopBar buttonLabel="Create Business" link="/signup" hideMenuButton={true} alwaysShowLogo={true} />
+      <Toolbar />
       {/* Grid container to arrange items, justify content for horizontal alignment & align items for vertical alignment */}
       <Grid container justifyContent={isMobile ? "center" : "space-between"} alignItems="center" style={{ padding: '2em 0' }}>
-        {/* If the screen size is smaller than 'sm', we render the Typography at center else at left */}
         <Grid item xs={12} sm={6}>
           <Typography variant={isMobile ? "h4" : "h2"} align="center">
             Welcome Words
           </Typography>
         </Grid>
         {/* Grid item for LoginForm component */}
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={6}>
           {/* Box to apply additional CSS to LoginForm, in this case, center alignment */}
           <Box display="flex" justifyContent="center">
             <LoginForm />

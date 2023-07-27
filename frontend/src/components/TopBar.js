@@ -33,20 +33,29 @@ const StyledButton = styled(Button)({
   marginRight: '0px'
 });
 
-const TopBar = ({ title, buttonLabel, link, children, showNotification = false, handleDrawerToggle }) => {
+const TopBar = ({ title, buttonLabel, link, children, showNotification = false, handleDrawerToggle, hideMenuButton = false, alwaysShowLogo = false }) => {
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <StyledToolbar>
         <Hidden mdUp>
-          <IconButton color="#3c3c3c" onClick={handleDrawerToggle}>
-            <MenuIcon />
-          </IconButton>
+          {!hideMenuButton && (
+            <IconButton color="#3c3c3c" onClick={handleDrawerToggle}>
+              <MenuIcon />
+            </IconButton>
+          )}
         </Hidden>
-        <Hidden mdDown>
+        {alwaysShowLogo || (
+          <Hidden mdDown>
+            <LogoContainer>
+              <img src="../assets/logo.svg" alt="logo" /> {/* logo image */}
+            </LogoContainer>
+          </Hidden>
+        )}
+        {alwaysShowLogo && (
           <LogoContainer>
             <img src="../assets/logo.svg" alt="logo" /> {/* logo image */}
           </LogoContainer>
-        </Hidden>
+        )}
         <div>
           <StyledTypography variant="h6">
             {title}

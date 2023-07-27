@@ -11,11 +11,15 @@ const drawerWidth = 240; // adjust to your needs
 export const MobileOpenContext = React.createContext();
 
 // Custom styled component for the drawer
-const DrawerContainer = styled('div')({
+const DrawerContainer = styled('div')(({theme}) => ({
+  [theme.breakpoints.up('md')]: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
-});
+}));
 
 const LinksContainer = styled('div')({
   flex: 1,

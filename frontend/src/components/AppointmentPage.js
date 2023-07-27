@@ -19,12 +19,7 @@ export default function AppointmentPage() {
       </Box>
       <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'auto', marginTop: '64px' }}>
         <Sidebar mobileOpen={mobileOpen} handleDrawerToggle={handleDrawerToggle} />
-        <Box 
-          sx={{ 
-            marginLeft: { md: `125px`, xs: mobileOpen ? `125px` : '0px' },
-            transition: 'margin .3s'
-          }}
-        >
+        <Box>
           <Calendar />
         </Box>
       </Box>
