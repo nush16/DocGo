@@ -13,7 +13,7 @@ const HomePage = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <TopBar title="Logo" buttonLabel="Create Business" link="/signup" />
+      <TopBar buttonLabel="Create Business" link="/signup" />
       {/* Grid container to arrange items, justify content for horizontal alignment & align items for vertical alignment */}
       <Grid container justifyContent={isMobile ? "center" : "space-between"} alignItems="center" style={{ padding: '2em 0' }}>
         {/* If the screen size is smaller than 'sm', we render the Typography at center else at left */}

@@ -1,0 +1,33 @@
+.container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .content {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .Topbar {
+    width: 100%;
+    /* Add your styles for Topbar */
+  }
+  
+  .Sidebar {
+    width: 20%;
+
+    /* Add your styles for Sidebar */
+  }
+  
+  .Calendar {
+    width: 80%;
+    
+    /* Add your styles for Calendar */
+  }
+
+  .Scheduler {
+    margin-top: 70px !important;
+    
+    /* Add your styles for Calendar */
+  }
+  

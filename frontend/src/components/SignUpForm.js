@@ -11,8 +11,7 @@ const SignUpFormContainer = styled(Box)({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  width: 600,
-  height: 400,
+  width: 700,
   padding: 24,
   boxSizing: 'border-box',
   boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', 
@@ -27,6 +26,7 @@ const StyledTextField = styled(TextField)({
 const SignUpForm = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');  
   const [businessName, setBusinessName] = useState('');
   const [password, setPassword] = useState('');
   
@@ -69,6 +69,14 @@ const SignUpForm = () => {
           variant="outlined"
           value={businessName}
           onChange={e => setBusinessName(e.target.value)}
+          required
+        />
+        <StyledTextField
+          fullWidth
+          label="Email"
+          variant="outlined"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
           required
         />
         <StyledTextField
