@@ -5,6 +5,7 @@ import HomePage from './components/HomePage';
 import SignUpPage from './components/SignUpPage';
 import ForgotPasswordPage from './components/ForgotPasswordPage';
 import AppointmentPage from './components/AppointmentPage';
+import PatientsPage from './components/PatientsPage';
 
 function App() {
   return (
@@ -12,9 +13,9 @@ function App() {
       <Routes>
         <Route path="/" element={<><TopBar currentPage="signin"/><HomePage /></>} />
         <Route path="/signup" element={<><TopBar currentPage="signup"/><SignUpPage /></>} />
-        <Route path="/forgotpassword" element={<><TopBar currentPage="signup"/><ForgotPasswordPage /></>} />
-        <Route path="/appointments" element={<><TopBar currentPage="signup"/><AppointmentPage /></>} />
-        <Route path="/appointments" element={<><TopBar currentPage="signup"/><AppointmentPage /></>} />
+        <Route path="/forgotpassword" element={<><TopBar currentPage="forgotpassword"/><ForgotPasswordPage /></>} />
+        <Route path="/appointments" element={<><TopBar currentPage="appointments"/><AppointmentPage /></>} />
+        <Route path="/patients" element={<><TopBar currentPage="patients"/><PatientsPage /></>} />
       </Routes>
     </Router>
   );

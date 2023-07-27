@@ -56,7 +56,7 @@ const LoginForm = () => {
           onChange={e => setPassword(e.target.value)}
           required
         />
-        <Button variant="contained" type="submit" style={{ marginTop: '20px' }}>
+        <Button href="/appointments" variant="contained" type="submit" style={{ marginTop: '20px' }}>
           Sign In
         </Button>
         <Typography style={{ marginTop: '20px', cursor: 'pointer', textDecoration: 'underline' }}>

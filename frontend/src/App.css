@@ -31,3 +31,11 @@
     /* Add your styles for Calendar */
   }
   
+  .active-link {
+    background-color: darkgrey;
+  }
+  
+  .profile-logout-button {
+    background-color: black;
+    color: white;
+  }

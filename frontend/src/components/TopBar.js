@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import { styled } from '@mui/system';
 import IconButton from '@mui/material/IconButton';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Hidden } from '@mui/material';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   justifyContent: 'space-between',
@@ -31,13 +33,20 @@ const StyledButton = styled(Button)({
   marginRight: '0px'
 });
 
-const TopBar = ({ title, buttonLabel, link, children, showNotification = false }) => {
+const TopBar = ({ title, buttonLabel, link, children, showNotification = false, handleDrawerToggle }) => {
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <StyledToolbar>
-      <LogoContainer>
-          <img src="../assets/logo.svg" alt="logo" /> {/* logo image */}
-        </LogoContainer>        
+        <Hidden mdUp>
+          <IconButton color="#3c3c3c" onClick={handleDrawerToggle}>
+            <MenuIcon />
+          </IconButton>
+        </Hidden>
+        <Hidden mdDown>
+          <LogoContainer>
+            <img src="../assets/logo.svg" alt="logo" /> {/* logo image */}
+          </LogoContainer>
+        </Hidden>
         <div>
           <StyledTypography variant="h6">
             {title}

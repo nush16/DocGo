@@ -1,52 +1,62 @@
-import React from 'react';
-import { Drawer, IconButton, List, ListItem, ListItemText, useTheme, Hidden, Box, AppBar, Toolbar, Typography } from '@mui/material';
+import React, { useContext, useState } from 'react';
+import { Drawer, IconButton, List, ListItem, ListItemText, useTheme, Hidden, Box, AppBar, Toolbar, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import { styled } from '@mui/system';
 
-export default function Sidebar() {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+// Declare drawerWidth
+const drawerWidth = 240; // adjust to your needs
+
+// Create a context for the mobile open state
+export const MobileOpenContext = React.createContext();
+
+// Custom styled component for the drawer
+const DrawerContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+});
+
+const LinksContainer = styled('div')({
+  flex: 1,
+});
+
+export default function Sidebar({ mobileOpen, handleDrawerToggle }) {
   const theme = useTheme();
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
   const drawer = (
-    <div
-      role="presentation"
-      onClick={handleDrawerToggle}
-      onKeyDown={handleDrawerToggle}
-    >
+    <DrawerContainer>
       <Toolbar /> {/* This line was added to aviod overlap*/}
+      <LinksContainer>
+        <List>
+          {[
+            {text: 'Appointments', path: '/appointments'},
+            {text: 'Patients', path: '/patients'},
+            {text: 'Staff', path: '/staff'},
+          ].map((item, index) => (
+            <ListItem button key={item.text} component={NavLink} to={item.path} activeClassName="active-link">
+              <ListItemText primary={item.text} />
+            </ListItem>
+          ))}
+        </List>
+      </LinksContainer>
+      <Divider />
       <List>
         {[
-          {text: 'Appointments', path: '/appointments'},
-          {text: 'Patients', path: '/patients'},
-          {text: 'Staff', path: '/staff'},
           {text: 'Profile', path: '/profile'},
           {text: 'Log Out', path: '/'}
         ].map((item, index) => (
-          <ListItem button key={item.text} component={Link} to={item.path}>
+          <ListItem button key={item.text} component={NavLink} to={item.path} activeClassName="active-link">
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
       </List>
-    </div>
+    </DrawerContainer>
   );
 
+
   return (
-    <div>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton 
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Box display="flex">
+      <div>
         <Hidden mdUp implementation="css">
           <Drawer
             variant="temporary"
@@ -59,10 +69,18 @@ export default function Sidebar() {
             {drawer}
           </Drawer>
         </Hidden>
-        <Hidden smDown implementation="css">
+        <Hidden mdDown implementation="css">
           <Drawer
             variant="permanent"
             open
+            sx={{
+              width: drawerWidth,
+              flexShrink: 0,
+              [`& .MuiDrawer-paper`]: {
+                width: drawerWidth,
+                boxSizing: 'border-box',
+              },
+            }}
             ModalProps={{
               keepMounted: true, // Better open performance on mobile.
             }}
@@ -70,12 +88,6 @@ export default function Sidebar() {
             {drawer}
           </Drawer>
         </Hidden>
-        <main>
-          {/* Main content goes here */}
-        </main>
-      </Box>
-        </Toolbar>
-      </AppBar>
-    </div>
+      </div>
   );
 }
