@@ -8,7 +8,7 @@ const app = express();
 
 // Set default values for HOST and PORT from environment variables, if not specified
 const HOST = process.env.HOST || "127.0.0.1";
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Helmet middleware for enhancing server security
 const helmet = require("helmet");
@@ -81,6 +81,36 @@ app.get("/databaseHealth", (request, response) => {
   });
 });
 
+// app.get("/databaseDump", async (request, response) => {
+//   // Set up an object to store our data.
+//   const dumpContainer = {};
+
+//   // Get the names of all collections in the DB.
+//   var collections = await mongoose.connection.db.listCollections().toArray();
+//   collections = collections.map((collection) => collection.name);
+
+//   // For each collection, get all their data and add it to the dumpContainer.
+//   for (const collectionName of collections) {
+//     let collectionData = await mongoose.connection.db
+//       .collection(collectionName)
+//       .find({})
+//       .toArray();
+//     dumpContainer[collectionName] = collectionData;
+//   }
+
+//   // Confirm in the terminal that the server is returning the right data.
+//   // With pretty formatting too, via JSON.stringify(value, null, spacing for indentation).
+//   console.log(
+//     "Dumping all of this data to the client: \n" +
+//       JSON.stringify(dumpContainer, null, 4)
+//   );
+
+//   // Return the big data object.
+//   response.json({
+//     data: dumpContainer,
+//   });
+// });
+
 // Route for the homepage
 app.get("/", (request, response) => {
   response.json({
@@ -90,31 +120,15 @@ app.get("/", (request, response) => {
 
 // // Import the signup router
 const signupRouter = require("./routes/signup_router");
+app.use("/", signupRouter);
 
 // // Import the user router
 const userRouter = require("./routes/user_router");
-
-// // Import the appointment router
-// const appointmentRouter = require("./routes/appointment_router");
-// // Import the patient router
-// const patientRouter = require("./routes/patient_router");
-// // Import the doctor router
-// const doctorRouter = require("./routes/doctor_router");
-
-// Use the signup router for all /signup routes
-app.use("/", signupRouter);
-
-// Use the user router for all /user routes
 app.use("/", userRouter);
 
-// // Use the appointment router for all /appointments routes
-// app.use("/appointments", appointmentRouter);
-
-// // Use the patient router for all /patients routes
-// app.use("/patients", patientRouter);
-
-// // Use the doctor router for all /doctors routes
-// app.use("/doctors", doctorRouter);
+// // Import the user router
+const staffRouter = require("./routes/staff_router");
+app.use("/", staffRouter);
 
 // Route for handling 404 errors (no route found)
 app.get("*", (request, response) => {
