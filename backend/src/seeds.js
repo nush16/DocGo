@@ -14,14 +14,14 @@ const seedData = async () => {
         last_name: "Brady",
         business_name: "ABC Clinic",
         email: "Tom.Brady@example.com",
-        phone: "1234567890",
+        password: "password1",
       },
       {
         first_name: "Kai",
         last_name: "Yu",
         business_name: "NEW Clinic",
         email: "Kai.Yu@example.com",
-        phone: "9876543210",
+        password: "password5",
       },
     ];
     const seededSignUps = await SignUp.create(signUps);

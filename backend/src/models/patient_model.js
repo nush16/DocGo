@@ -10,7 +10,7 @@ const PatientSchema = new mongoose.Schema({
   email: { type: String, required: true }, // Property for storing the email (expects a string)
   phone: { type: Number, required: true }, // Property for storing the phone (expects a string)
   note: { type: String }, // Property for storing the note (expects a string)
-  Appointments: [{ type: mongoose.Types.ObjectId, ref: "Appointment" }],
+  appointmentsbooked: [{ type: mongoose.Types.ObjectId, ref: "Appointment" }],
 });
 
 // Create a Mongoose model named "Patient" based on the "PatientSchema"

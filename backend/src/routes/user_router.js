@@ -7,8 +7,15 @@ const {
 } = require("../controllers/user_controller");
 
 // User routes
-userRouter.post("/user", createUser);
-userRouter.get("/users", getUserById);
+
+// Route to create a new user
+userRouter.post("/createuser", createUser);
+
+// Route to get a specific user by ID
+userRouter.get("/users/:id", getUserById);
+
+// Route to get all users
 userRouter.get("/allusers", getAllUsers);
 
+// Exporting the userRouter to make it accessible from other parts of the application
 module.exports = userRouter;

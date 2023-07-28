@@ -1,44 +1,45 @@
 const { SignUp } = require("../models/signup_model");
 
 // Controller function for creating a new sign-up entry
-async function createSignUp(req, res) {
+async function createSignUp(request, response) {
   try {
-    const { first_name, last_name, business_name, email, phone } = req.body;
+    const { first_name, last_name, business_name, email, password } =
+      request.body;
     const newSignUp = new SignUp({
       first_name,
       last_name,
       business_name,
       email,
-      phone,
+      password,
     });
     const savedSignUp = await newSignUp.save();
-    res.status(201).json(savedSignUp);
+    response.status(201).json(savedSignUp);
   } catch (err) {
-    res.status(500).json({ error: "Failed to create sign-up entry." });
+    response.status(500).json({ error: "Failed to create sign-up entry." });
   }
 }
 
 // Controller function for fetching all sign-up entries
-async function getAllSignUps(req, res) {
+async function getAllSignUps(request, response) {
   try {
     const signUps = await SignUp.find().populate("users"); // Populating the 'users' field with associated User models
-    res.status(200).json(signUps);
+    response.status(200).json(signUps);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch sign-up entries." });
+    response.status(500).json({ error: "Failed to fetch sign-up entries." });
   }
 }
 
 // Controller function for fetching sign-up entry details by ID
-async function getSignUpById(req, res) {
+async function getSignUpById(request, response) {
   try {
-    const signUpId = req.params.id;
+    const signUpId = request.params.id;
     const signUp = await SignUp.findById(signUpId).populate("users"); // Populating the 'users' field with associated User models
     if (!signUp) {
-      return res.status(404).json({ error: "Sign-up entry not found." });
+      return response.status(404).json({ error: "Sign-up entry not found." });
     }
-    res.status(200).json(signUp);
+    response.status(200).json(signUp);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch sign-up entry." });
+    response.status(500).json({ error: "Failed to fetch sign-up entry." });
   }
 }
 

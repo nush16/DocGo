@@ -9,18 +9,19 @@ const {
 } = require("../controllers/patient_controller");
 
 // Route to create a new patient
-patientRouter.post("/", createPatient);
+patientRouter.post("/addnewpatient", createPatient);
 
 // Route to get all patients
-patientRouter.get("/", getAllPatients);
+patientRouter.get("/allpatients", getAllPatients);
 
 // Route to get a single patient by ID
-patientRouter.get("/:id", getPatientById);
+patientRouter.get("/patient/:id", getPatientById);
 
 // Route to update an existing patient
-patientRouter.put("/:id", updatePatientById);
+patientRouter.put("/patient/:id", updatePatientById);
 
 // Route to delete a patient by ID
-patientRouter.delete("/:id", deletePatientById);
+patientRouter.delete("/patient/:id", deletePatientById);
 
+// Exporting the patientRouter to make it accessible from other parts of the application
 module.exports = patientRouter;

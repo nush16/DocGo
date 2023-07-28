@@ -1,38 +1,38 @@
 const { User } = require("../models/user_model");
 
 // Controller function for creating a new user
-async function createUser(req, res) {
+async function createUser(request, response) {
   try {
-    const { email, password } = req.body;
+    const { email, password } = request.body;
     const newUser = new User({ email, password });
     const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    response.status(201).json(savedUser);
   } catch (err) {
-    res.status(500).json({ error: "Failed to create user." });
+    response.status(500).json({ error: "Failed to create user." });
   }
 }
 
 // Controller function for fetching user details by ID
-async function getUserById(req, res) {
+async function getUserById(request, response) {
   try {
-    const userId = req.params.id;
+    const userId = request.params.id;
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
-    res.status(200).json(user);
+    response.status(200).json(user);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch user." });
+    response.status(500).json({ error: "Failed to fetch user." });
   }
 }
 
 // Controller function to fetch all users
-async function getAllUsers(req, res) {
+async function getAllUsers(request, response) {
   try {
     const users = await User.find();
-    res.status(200).json(users);
+    response.status(200).json(users);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch users." });
+    response.status(500).json({ error: "Failed to fetch users." });
   }
 }
 

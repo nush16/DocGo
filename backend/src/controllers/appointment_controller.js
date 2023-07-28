@@ -1,67 +1,67 @@
 const { Appointment } = require("../models/appointment_model");
 
 // Controller to create a new appointment
-async function createAppointment(req, res) {
+async function createAppointment(request, response) {
   try {
-    const newAppointment = await Appointment.create(req.body);
-    res.status(201).json(newAppointment);
+    const newAppointment = await Appointment.create(request.body);
+    response.status(201).json(newAppointment);
   } catch (err) {
-    res.status(500).json({ error: "Failed to create the appointment" });
+    response.status(500).json({ error: "Failed to create the appointment" });
   }
 }
 
 // Controller to retrieve all appointments
-async function getAllAppointments(req, res) {
+async function getAllAppointments(request, response) {
   try {
     const appointments = await Appointment.find();
-    res.status(200).json(appointments);
+    response.status(200).json(appointments);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch appointments" });
+    response.status(500).json({ error: "Failed to fetch appointments" });
   }
 }
 
 // Controller to retrieve a single appointment by ID
-async function getAppointmentById(req, res) {
+async function getAppointmentById(request, response) {
   try {
-    const appointment = await Appointment.findById(req.params.id);
+    const appointment = await Appointment.findById(request.params.id);
     if (!appointment) {
-      return res.status(404).json({ error: "Appointment not found" });
+      return response.status(404).json({ error: "Appointment not found" });
     }
-    res.status(200).json(appointment);
+    response.status(200).json(appointment);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch the appointment" });
+    response.status(500).json({ error: "Failed to fetch the appointment" });
   }
 }
 
 // Controller to update an appointment by ID
-async function updateAppointmentById(req, res) {
+async function updateAppointmentById(request, response) {
   try {
     const updatedAppointment = await Appointment.findByIdAndUpdate(
-      req.params.id,
-      req.body,
+      request.params.id,
+      request.body,
       { new: true }
     );
     if (!updatedAppointment) {
-      return res.status(404).json({ error: "Appointment not found" });
+      return response.status(404).json({ error: "Appointment not found" });
     }
-    res.status(200).json(updatedAppointment);
+    response.status(200).json(updatedAppointment);
   } catch (err) {
-    res.status(500).json({ error: "Failed to update the appointment" });
+    response.status(500).json({ error: "Failed to update the appointment" });
   }
 }
 
 // Controller to delete an appointment by ID
-async function deleteAppointmentById(req, res) {
+async function deleteAppointmentById(request, response) {
   try {
     const deletedAppointment = await Appointment.findByIdAndRemove(
-      req.params.id
+      request.params.id
     );
     if (!deletedAppointment) {
-      return res.status(404).json({ error: "Appointment not found" });
+      return response.status(404).json({ error: "Appointment not found" });
     }
-    res.status(200).json({ message: "Appointment deleted successfully" });
+    response.status(200).json({ message: "Appointment deleted successfully" });
   } catch (err) {
-    res.status(500).json({ error: "Failed to delete the appointment" });
+    response.status(500).json({ error: "Failed to delete the appointment" });
   }
 }
 
