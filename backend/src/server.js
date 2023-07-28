@@ -118,17 +118,21 @@ app.get("/", (request, response) => {
   });
 });
 
-// // Import the signup router
+// Import the signup router
 const signupRouter = require("./routes/signup_router");
 app.use("/", signupRouter);
 
-// // Import the user router
+// Import the user router
 const userRouter = require("./routes/user_router");
 app.use("/", userRouter);
 
-// // Import the user router
+// Import the staff router
 const staffRouter = require("./routes/staff_router");
 app.use("/", staffRouter);
+
+// Import the appointment router
+const appointmentRouter = require("./routes/appointment_router");
+app.use("/", appointmentRouter);
 
 // Route for handling 404 errors (no route found)
 app.get("*", (request, response) => {

@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const { User } = require("./models/user_model");
 const { SignUp } = require("./models/signup_model");
+const { Staff } = require("./models/staffs_model");
 
 // Function to seed data into the database
 const seedData = async () => {
@@ -55,9 +56,55 @@ const seedData = async () => {
     ];
     await User.create(users);
 
+    const staff = [
+      {
+        title: "Doctor",
+        first_name: "Tom",
+        last_name: "Brady",
+        email: "Tom.Brady@example.com",
+        user: users[0]._id, // Reference the first user for the Staff
+      },
+      {
+        title: "Doctor",
+        first_name: "Kate",
+        last_name: "Lam",
+        email: "Kate.Lam@example.com",
+        user: users[1]._id, // Reference the second user for the Staff
+      },
+      {
+        title: "Doctor",
+        first_name: "Rajesh",
+        last_name: "Abeyan",
+        email: "Rajesh.Abeyan@example.com",
+        user: users[2]._id, // Reference the second user for the Staff
+      },
+      {
+        title: "Admin",
+        first_name: "Laura",
+        last_name: "Simmons",
+        email: "Laura.Simmons@example.com",
+        user: users[3]._id, // Reference the second user for the Staff
+      },
+      {
+        title: "Doctor",
+        first_name: "Kai",
+        last_name: "Yu",
+        email: "Kai.Yu@example.com",
+        user: users[4]._id, // Reference the second user for the Staff
+      },
+    ];
+    await Staff.create(staff);
+
     // Use populate() to fetch the associated data when seeding
     const signUpsWithUsers = await SignUp.find().populate("users");
     console.log("SignUps with associated Users:", signUpsWithUsers);
+
+    // Use populate() to fetch the associated data when seeding
+    const signUpsWithStaff = await SignUp.find().populate({
+      path: "users",
+      populate: { path: "staff" },
+    });
+    console.log("SignUps with associated Users and Staff:", signUpsWithStaff);
 
     console.log("Data seeded successfully!");
   } catch (error) {
