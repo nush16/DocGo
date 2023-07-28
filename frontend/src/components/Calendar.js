@@ -1,5 +1,5 @@
-import React from 'react';
-import { ViewState } from '@devexpress/dx-react-scheduler';
+import React, { useState } from 'react';
+import { ViewState, EditingState } from '@devexpress/dx-react-scheduler';
 import {
   Scheduler,
   DayView,
@@ -9,7 +9,9 @@ import {
   DateNavigator,
   TodayButton,
   ViewSwitcher,
+  AppointmentForm,
 } from '@devexpress/dx-react-scheduler-material-ui';
+
 
 const currentDate = new Date().toISOString().slice(0,10);
 
@@ -19,14 +21,33 @@ const schedulerData = [{
   title: 'Patient Name',
 }];
 
-export default function Demo() {
+export default function Calendar() {
+  const [appointments, setAppointments] = useState(schedulerData);
+
+  const commitChanges = ({ added, changed, deleted }) => {
+    if (added) {
+      const startingAddedId = appointments.length > 0 ? appointments[appointments.length - 1].id + 1 : 0;
+      setAppointments([...appointments, { id: startingAddedId, ...added }]);
+    }
+    if (changed) {
+      setAppointments(appointments.map(appointment => (
+        changed[appointment.id] ? { ...appointment, ...changed[appointment.id] } : appointment)));
+    }
+    if (deleted !== undefined) {
+      setAppointments(appointments.filter(appointment => appointment.id !== deleted));
+    }
+  };
+
   return (
     <Scheduler
-      data={schedulerData}
+      data={appointments}
     >
       <ViewState
         defaultCurrentDate={currentDate}
         defaultCurrentViewName="Day"
+      />
+      <EditingState
+        onCommitChanges={commitChanges}
       />
       <DayView
         startDayHour={8}
@@ -41,6 +62,7 @@ export default function Demo() {
       <TodayButton />
       <ViewSwitcher />
       <Appointments />
+      <AppointmentForm />
     </Scheduler>
   );
 }
