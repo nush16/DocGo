@@ -9,6 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Hidden } from "@mui/material";
+import Logo from "../../assets/logo-doc.svg";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   justifyContent: "space-between",
@@ -59,13 +60,13 @@ const TopBar = ({
         {alwaysShowLogo || (
           <Hidden mdDown>
             <LogoContainer>
-              <img src="../assets/logo.svg" alt="logo" /> {/* logo image */}
+              <img src={Logo} alt="logo" />
             </LogoContainer>
           </Hidden>
         )}
         {alwaysShowLogo && (
           <LogoContainer>
-            <img src="../assets/logo.svg" alt="logo" /> {/* logo image */}
+            <img src={Logo} alt="logo" />
           </LogoContainer>
         )}
         <div>
