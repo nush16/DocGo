@@ -1,4 +1,4 @@
-const { Staff } = require("../models/staffs_model");
+const Staff = require("../models/staff_model");
 
 // Controller function to get all staff members
 const getAllStaff = async (request, response) => {

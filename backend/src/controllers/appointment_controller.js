@@ -1,4 +1,8 @@
-const { Appointment } = require("../models/appointment_model");
+const Appointment = require("../models/appointment_model");
+const User = require("../models/user_model");
+const SignUp = require("../models/signup_model");
+const Staff = require("../models/staff_model");
+const Patient = require("../models/patient_model");
 
 // Controller to create a new appointment
 async function createAppointment(request, response) {

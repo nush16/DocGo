@@ -9,7 +9,7 @@ const {
 // User routes
 
 // Route to create a new user
-userRouter.post("/createuser", createUser);
+userRouter.post("/adduser", createUser);
 
 // Route to get a specific user by ID
 userRouter.get("/users/:id", getUserById);

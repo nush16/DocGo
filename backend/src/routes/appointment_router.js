@@ -13,9 +13,9 @@ const {
 // Routes for the appointment controllers
 
 // Route to create a new appointment
-appointmentRouter.post("/addapointment", createAppointment);
+appointmentRouter.post("/addappointment", createAppointment);
 
-// Route to get all appointments
+// Route to get all appointmentss
 appointmentRouter.get("/allappointments", getAllAppointments);
 
 // Route to get a specific appointment by ID

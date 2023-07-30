@@ -7,14 +7,13 @@ const PatientSchema = new mongoose.Schema({
   last_name: { type: String, required: true }, // Property for storing the last name (expects a string)
   preferred_name: { type: String, required: true }, // Property for storing the preferred name (expects a string)
   dob: { type: Date, required: true }, // Property for storing the date of birth (expects a string)
-  email: { type: String, required: true }, // Property for storing the email (expects a string)
-  phone: { type: Number, required: true }, // Property for storing the phone (expects a string)
-  note: { type: String }, // Property for storing the note (expects a string)
-  appointmentsbooked: [{ type: mongoose.Types.ObjectId, ref: "Appointment" }],
+  email: { type: String, unique: true, lowercase: true, required: true }, // Property for storing the email (expects a string)
+  phone: { type: String, required: true }, // Property for storing the phone (expects a string)
+  note: String, // Property for storing the note (expects a string)
 });
 
 // Create a Mongoose model named "Patient" based on the "PatientSchema"
 const Patient = mongoose.model("Patient", PatientSchema);
 
 // Export the "Patient" model to make it accessible from other parts of the application
-module.exports = { Patient };
+module.exports = Patient;

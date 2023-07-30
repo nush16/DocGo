@@ -1,4 +1,4 @@
-const { Patient } = require("../models/patient_model");
+const Patient = require("../models/patient_model");
 
 // Controller to create a new patient
 async function createPatient(request, response) {
@@ -9,35 +9,6 @@ async function createPatient(request, response) {
     response.status(500).json({ error: "Failed to create the patient" });
   }
 }
-
-// async function createPatient(request, response) {
-//   try {
-//     const {
-//       title,
-//       first_name,
-//       last_name,
-//       preferred_name,
-//       dob,
-//       email,
-//       phone,
-//       note,
-//     } = request.body;
-//     const newPatient = new Patient({
-//       title,
-//       first_name,
-//       last_name,
-//       preferred_name,
-//       dob,
-//       email,
-//       phone,
-//       note,
-//     });
-//     const savedPatient = await newPatient.save();
-//     response.status(201).json(savedPatient);
-//   } catch (err) {
-//     response.status(500).json({ error: "Failed to create patient." });
-//   }
-// }
 
 // Controller to retrieve all patients
 async function getAllPatients(request, response) {

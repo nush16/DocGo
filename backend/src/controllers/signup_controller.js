@@ -1,4 +1,4 @@
-const { SignUp } = require("../models/signup_model");
+const SignUp = require("../models/signup_model");
 
 // Controller function for creating a new sign-up entry
 async function createSignUp(request, response) {

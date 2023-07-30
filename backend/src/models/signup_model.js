@@ -6,9 +6,8 @@ const SignUpSchema = new mongoose.Schema({
   business_name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  users: [{ type: mongoose.Types.ObjectId, ref: "User" }], // Reference to multiple User models
 });
 
-const SignUp = mongoose.model("SignUp", SignUpSchema);
+const SignUp = mongoose.model("Signup", SignUpSchema);
 
-module.exports = { SignUp };
+module.exports = SignUp;
