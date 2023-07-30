@@ -16,13 +16,15 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 }));
 
 const LogoContainer = styled("div")({
+  height: "1rem",
+  width: "1rem",
   display: "flex",
   alignItems: "center",
 });
 
 const StyledTypography = styled(Typography)({
   position: "absolute",
-  top: "50%",
+  top: "30%",
   left: "50%",
   transform: "translateX(-50%)",
   display: "flex",
@@ -38,7 +40,6 @@ const TopBar = ({
   title,
   buttonLabel,
   link,
-  children,
   showNotification = false,
   handleDrawerToggle,
   hideMenuButton = false,
@@ -52,7 +53,7 @@ const TopBar = ({
       <StyledToolbar>
         <Hidden mdUp>
           {!hideMenuButton && (
-            <IconButton color="#3c3c3c" onClick={handleDrawerToggle}>
+            <IconButton color="inherit" onClick={handleDrawerToggle}>
               <MenuIcon />
             </IconButton>
           )}
@@ -73,7 +74,9 @@ const TopBar = ({
           <StyledTypography variant="h6">{title}</StyledTypography>
         </div>
         {showNotification && (
-          <IconButton color="#3c3c3c">
+          <IconButton color="inherit">
+            {" "}
+            {/* Set color to "inherit" */}
             <NotificationsNoneIcon />
           </IconButton>
         )}

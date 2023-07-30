@@ -36,6 +36,7 @@ const DrawerContainer = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   height: "100%",
+  backgroundColor: "#f5fbff",
 }));
 
 const LinksContainer = styled("div")({

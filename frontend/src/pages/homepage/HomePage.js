@@ -7,8 +7,9 @@ import {
   useMediaQuery,
   Toolbar,
 } from "@mui/material";
-import TopBar from "../../components/topbar/TopBar";
+// import TopBar from "../../components/topbar/TopBar";
 import LoginForm from "../login/LoginForm";
+import Homepage from "../../assets/homepageimage.svg";
 
 const HomePage = () => {
   // useTheme provides the default MUI theme
@@ -20,24 +21,26 @@ const HomePage = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <TopBar
+      {/* <TopBar
         buttonLabel="Create Business"
         link="/signup"
         hideMenuButton={true}
         alwaysShowLogo={true}
-      />
+      /> */}
       <Toolbar />
       {/* Grid container to arrange items, justify content for horizontal alignment & align items for vertical alignment */}
       <Grid
         container
         justifyContent={isMobile ? "center" : "space-between"}
         alignItems="center"
-        style={{ padding: "2em 0" }}
+        // style={{ padding: "10% 0" }}
       >
         <Grid item xs={12} sm={6}>
-          <Typography variant={isMobile ? "h4" : "h2"} align="center">
+          {/* <Typography variant={isMobile ? "h4" : "h2"} align="center">
             Welcome Words
-          </Typography>
+          </Typography> */}
+
+          <img src={Homepage} alt="logo" />
         </Grid>
         {/* Grid item for LoginForm component */}
         <Grid item xs={6} sm={6}>
