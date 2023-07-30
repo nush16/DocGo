@@ -12,6 +12,11 @@ import {
   Toolbar,
   Divider,
 } from "@mui/material";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import PersonIcon from "@mui/icons-material/Person";
+import MedicationLiquidIcon from "@mui/icons-material/MedicationLiquid";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
 import { NavLink } from "react-router-dom";
 import { styled } from "@mui/system";
@@ -57,7 +62,36 @@ export default function SideBar({ mobileOpen, handleDrawerToggle }) {
               to={item.path}
               activeClassName="active-link"
             >
-              <ListItemText primary={item.text} />
+              {/* Add the CalendarMonthIcon here */}
+              {item.text === "Appointments" && (
+                <Box
+                  component="span"
+                  sx={{ display: "flex", alignItems: "center" }}
+                >
+                  <CalendarMonthIcon sx={{ marginRight: 1 }} />
+                  <ListItemText primary={item.text} />
+                </Box>
+              )}
+              {/* Add the CalendarMonthIcon here */}
+              {item.text === "Patients" && (
+                <Box
+                  component="span"
+                  sx={{ display: "flex", alignItems: "center" }}
+                >
+                  <PersonIcon sx={{ marginRight: 1 }} />
+                  <ListItemText primary={item.text} />
+                </Box>
+              )}
+              {/* Add the CalendarMonthIcon here */}
+              {item.text === "Staff" && (
+                <Box
+                  component="span"
+                  sx={{ display: "flex", alignItems: "center" }}
+                >
+                  <MedicationLiquidIcon sx={{ marginRight: 1 }} />
+                  <ListItemText primary={item.text} />
+                </Box>
+              )}
             </ListItem>
           ))}
         </List>
@@ -75,7 +109,24 @@ export default function SideBar({ mobileOpen, handleDrawerToggle }) {
             to={item.path}
             activeClassName="active-link"
           >
-            <ListItemText primary={item.text} />
+            {item.text === "Profile" && (
+              <Box
+                component="span"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <AccountBoxIcon sx={{ marginRight: 1 }} />
+                <ListItemText primary={item.text} />
+              </Box>
+            )}
+            {item.text === "Log Out" && (
+              <Box
+                component="span"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <LogoutIcon sx={{ marginRight: 1 }} />
+                <ListItemText primary={item.text} />
+              </Box>
+            )}
           </ListItem>
         ))}
       </List>
