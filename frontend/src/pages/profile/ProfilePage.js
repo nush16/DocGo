@@ -3,6 +3,7 @@ import TopBar from "../../components/topbar/TopBar";
 import Sidebar from "../../components/sidebar/SideBar";
 import Calendar from "../../components/calendar/Calendar";
 import "../../App.css";
+import AccountSettings from "./Profile";
 import { Box, Toolbar } from "@mui/material";
 
 export default function ProfilePage() {
@@ -32,6 +33,7 @@ export default function ProfilePage() {
           mobileOpen={mobileOpen}
           handleDrawerToggle={handleDrawerToggle}
         />
+        <AccountSettings />
         <Toolbar />
       </Box>
     </Box>
