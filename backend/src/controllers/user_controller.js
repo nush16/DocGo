@@ -1,5 +1,5 @@
 const User = require("../models/user_model");
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
@@ -163,7 +163,38 @@ const editUser = async (req, res) => {
       res.status(500).json({ error: 'Error deleting user.' });
     }
   };
+ 
+// Controller function for user login
+const loginUser = async (req, res) => {
+    try {
+      const { email, password } = req.body;
   
+      // Find the user by email
+      const user = await User.findOne({ email });
+  
+      if (!user) {
+        return res.status(400).json({ error: "Invalid email or password" });
+      }
+  
+      // Check the password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+  
+      if (!isPasswordValid) {
+        return res.status(400).json({ error: "Invalid email or password" });
+      }
+  
+      // Create a JWT
+      const token = jwt.sign({ id: user._id }, 'your-secret-key', { expiresIn: '1h' });
+  
+      res.json({ token });
+  
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(500).json({ error: "Error logging in" });
+    }
+  };
+  
+
   // Update exported controller functions
   module.exports = {
     createUser,
@@ -171,5 +202,6 @@ const editUser = async (req, res) => {
     getAllUsers,
     editUser,
     changePassword,
-    deleteUser
+    deleteUser,
+    loginUser,
   };
