@@ -1,6 +1,6 @@
 const Patient = require("../models/patient_model");
 
-// Controller to create a new patient
+// Controller function for creating a patient
 async function createPatient(request, response) {
   try {
     const newPatient = await Patient.create(request.body);
