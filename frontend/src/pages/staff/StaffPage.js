@@ -4,6 +4,7 @@ import Sidebar from "../../components/sidebar/SideBar";
 import Calendar from "../../components/calendar/Calendar";
 import "../../App.css";
 import { Box, Toolbar } from "@mui/material";
+import StaffStickyHeadTable from "./StaffTable";
 
 export default function StaffsPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -32,6 +33,7 @@ export default function StaffsPage() {
           mobileOpen={mobileOpen}
           handleDrawerToggle={handleDrawerToggle}
         />
+        <StaffStickyHeadTable />
         <Toolbar />
       </Box>
     </Box>
