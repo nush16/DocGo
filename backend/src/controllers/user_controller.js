@@ -112,6 +112,10 @@ const editUser = async (req, res) => {
   
   // Controller function for changing password
   const changePassword = async (req, res) => {
+    if (!req.user.isAdmin && req.user.id !== req.params.id) {
+        return res.status(403).json({ error: 'Unauthorized.' });
+      }
+
     try {
       const { oldPassword, newPassword } = req.body;
       const userId = req.params.id;
@@ -144,6 +148,10 @@ const editUser = async (req, res) => {
   
   // Controller function for deleting a user
   const deleteUser = async (req, res) => {
+    if (!req.user.isAdmin) {
+        return res.status(403).json({ error: 'Unauthorized.' });
+      }
+      
     try {
       const userId = req.params.id;
   
