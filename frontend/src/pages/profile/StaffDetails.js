@@ -11,6 +11,8 @@ import InputLabel from "@mui/material/InputLabel";
 import CardContent from "@mui/material/CardContent";
 import FormControl from "@mui/material/FormControl";
 import Button from "@mui/material/Button";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 
 // const ResetButtonStyled = styled(Button)(({ theme }) => ({
 //   marginLeft: theme.spacing(4.5),
@@ -74,15 +76,6 @@ const StaffDetails = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Role</InputLabel>
-              <Select label="Role" defaultValue="admin">
-                <MenuItem value="admin">Admin</MenuItem>
-                <MenuItem value="doctor">Doctor</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               type="Contact Number"
@@ -99,7 +92,21 @@ const StaffDetails = () => {
               defaultValue="ABC"
             />
           </Grid>
-
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Change Password"
+              placeholder="********"
+              defaultValue="********"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={<Checkbox />}
+              label="Administrator Role"
+            />
+            <FormControlLabel control={<Checkbox />} label="Practioner Role" />
+          </Grid>
           <Grid item xs={12}>
             <Button variant="contained" sx={{ marginRight: 3.5 }}>
               Save Changes
