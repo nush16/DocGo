@@ -9,6 +9,8 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
+import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   { id: "first_name", label: "First Name", minWidth: 170 },
@@ -40,21 +42,33 @@ function createData(first_name, last_name, email, phone, appointment) {
 }
 
 const rows = [
-  createData("John", "IN", "@gmail.com", 3287263, "11 / 05 / 2024"),
-  createData("Sally", "CN", "@gmail.com", 9596961, "11 / 05 / 2024"),
-  createData("Kris", "IT", "@gmail.com", 301340, "11 / 05 / 2024"),
-  createData("Bianca", "US", "@gmail.com", 9833520, "11 / 05 / 2024"),
-  createData("Tom", "CA", "@gmail.com", 9984670, "11 / 05 / 2024"),
-  createData("Timmy", "AU", "@gmail.com", 7692024, "11 / 05 / 2024"),
-  createData("Sally", "DE", "@gmail.com", 357578, "11 / 05 / 2024"),
-  createData("Nick", "IE", "@gmail.com", 70273, "11 / 05 / 2024"),
-  createData("Gayle", "MX", "@gmail.com", 1972550, "11 / 05 / 2024"),
-  createData("Matt", "JP", "@gmail.com", 377973, "11 / 05 / 2024"),
-  createData("Franco", "FR", "@gmail.com", 640679, "11 / 05 / 2024"),
-  createData("Nat", "GB", "@gmail.com", 242495, "11 / 05 / 2024"),
-  createData("Karina", "RU", "@gmail.com", 17098246, "11 / 05 / 2024"),
-  createData("Ian", "NG", "@gmail.com", 923768, "11 / 05 / 2024"),
-  createData("Bob", "BR", "@gmail.com", 8515767, "11 / 05 / 2024"),
+  createData("John", "IN", "John.In@example.com", 3287263, "11 / 05 / 2024"),
+  createData("Sally", "CN", "Sally.Cn@example.com", 9596961, "11 / 05 / 2024"),
+  createData("Kris", "IT", "Kris.It@example.com", 301340, "11 / 05 / 2024"),
+  createData(
+    "Bianca",
+    "US",
+    "Bianca.Us@example.com",
+    9833520,
+    "11 / 05 / 2024"
+  ),
+  createData("Tom", "CA", "Tom.Ca@example.com", 9984670, "11 / 05 / 2024"),
+  createData("Timmy", "AU", "Timmy.Au@example.com", 7692024, "11 / 05 / 2024"),
+  createData("Sally", "DE", "Sally.De@example.com", 357578, "11 / 05 / 2024"),
+  createData("Nick", "IE", "Nick.Ie@example.com", 70273, "11 / 05 / 2024"),
+  createData("Gayle", "MX", "Gayle.Mx@example.com", 1972550, "11 / 05 / 2024"),
+  createData("Matt", "JP", "Matt.Jp@example.com", 377973, "11 / 05 / 2024"),
+  createData("Franco", "FR", "Franco.Fr@example.com", 640679, "11 / 05 / 2024"),
+  createData("Nat", "GB", "Nat.Gb@example.com", 242495, "11 / 05 / 2024"),
+  createData(
+    "Karina",
+    "RU",
+    "Kate.Lam@example.com",
+    17098246,
+    "11 / 05 / 2024"
+  ),
+  createData("Ian", "NG", "Kate.Lam@example.com", 923768, "11 / 05 / 2024"),
+  createData("Bob", "BR", "Kate.Lam@example.com", 8515767, "11 / 05 / 2024"),
 ];
 
 export default function PatientStickyHeadTable() {
@@ -84,6 +98,14 @@ export default function PatientStickyHeadTable() {
     );
     setFilteredRows(filteredRows);
     setPage(0);
+  };
+
+  const navigate = useNavigate();
+
+  const handleAddPatient = () => {
+    console.log("Add Patient clicked!");
+
+    navigate("/add-patient");
   };
 
   return (
@@ -146,6 +168,13 @@ export default function PatientStickyHeadTable() {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      <div
+        style={{ display: "flex", justifyContent: "center", padding: "10px" }}
+      >
+        <Button variant="contained" color="primary" onClick={handleAddPatient}>
+          Add Patient
+        </Button>
+      </div>
     </Paper>
   );
 }

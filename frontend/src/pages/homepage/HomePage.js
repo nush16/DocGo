@@ -43,7 +43,7 @@ const HomePage = () => {
           <img src={Homepage} alt="logo" />
         </Grid>
         {/* Grid item for LoginForm component */}
-        <Grid item xs={6} sm={6}>
+        <Grid item xs={12} sm={6}>
           {/* Box to apply additional CSS to LoginForm, in this case, center alignment */}
           <Box display="flex" justifyContent="center">
             <LoginForm />

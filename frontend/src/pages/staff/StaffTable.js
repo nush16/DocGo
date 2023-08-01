@@ -40,21 +40,35 @@ function createData(first_name, last_name, email, phone, appointment) {
 }
 
 const rows = [
-  createData("John", "IN", "@gmail.com", 3287263, "11 / 05 / 2024"),
-  createData("Sally", "CN", "@gmail.com", 9596961, "11 / 05 / 2024"),
-  createData("Kris", "IT", "@gmail.com", 301340, "11 / 05 / 2024"),
-  createData("Bianca", "US", "@gmail.com", 9833520, "11 / 05 / 2024"),
-  createData("Tom", "CA", "@gmail.com", 9984670, "11 / 05 / 2024"),
-  createData("Timmy", "AU", "@gmail.com", 7692024, "11 / 05 / 2024"),
-  createData("Sally", "DE", "@gmail.com", 357578, "11 / 05 / 2024"),
-  createData("Nick", "IE", "@gmail.com", 70273, "11 / 05 / 2024"),
-  createData("Gayle", "MX", "@gmail.com", 1972550, "11 / 05 / 2024"),
-  createData("Matt", "JP", "@gmail.com", 377973, "11 / 05 / 2024"),
-  createData("Franco", "FR", "@gmail.com", 640679, "11 / 05 / 2024"),
-  createData("Nat", "GB", "@gmail.com", 242495, "11 / 05 / 2024"),
-  createData("Karina", "RU", "@gmail.com", 17098246, "11 / 05 / 2024"),
-  createData("Ian", "NG", "@gmail.com", 923768, "11 / 05 / 2024"),
-  createData("Bob", "BR", "@gmail.com", 8515767, "11 / 05 / 2024"),
+  createData(
+    "Tom",
+    "Brady",
+    "Tom.Brady@example.com",
+    3287263,
+    "11 / 05 / 2024"
+  ),
+  createData(
+    "Sally",
+    "Yus",
+    "Sally.Yus@example.comm",
+    9596961,
+    "11 / 05 / 2024"
+  ),
+  createData("Kate", "Lam", "Kate.Lam@example.com", 301340, "11 / 05 / 2024"),
+  createData(
+    "Rajesh",
+    "Abeyan",
+    "Rajesh.Abeyan@example.com",
+    9984670,
+    "11 / 05 / 2024"
+  ),
+  createData(
+    "Laura",
+    "Simmons",
+    "Laura.Simmons@example.com",
+    7692024,
+    "11 / 05 / 2024"
+  ),
 ];
 
 export default function StaffStickyHeadTable() {
