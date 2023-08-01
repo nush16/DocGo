@@ -71,11 +71,15 @@ app.get('/', (request, response) => {
 
 // Import and setup JWT middleware for authentication
 const jwtMiddleware = require('./middlewares/auth.js');
-app.use(jwtMiddleware); // Removed the extra function call
+// app.use(jwtMiddleware); // Removed the extra function call
 
 // Import the user router and setup its routes
 const userRouter = require('./routes/user_router');
 app.use('/', userRouter);
+
+// Import and setup patient router
+const patientRouter = require('./routes/patient_router');
+app.use('/patient', patientRouter);
 
 // Route for handling 404 errors (no route found)
 app.use('*', (request, response) => {
@@ -84,6 +88,11 @@ app.use('*', (request, response) => {
     attemptedPath: request.path,
   });
 });
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 
 // Export necessary data to run the server
 module.exports = {

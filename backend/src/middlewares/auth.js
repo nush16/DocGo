@@ -1,7 +1,6 @@
 // Import the jsonwebtoken package
 const jwt = require("jsonwebtoken");
 
-// Define a middleware function for authenticating JWT tokens
 const authenticateJWT = (req, res, next) => {
   // Get the Authorization header from the incoming request
   const authHeader = req.headers.authorization;
@@ -12,7 +11,9 @@ const authenticateJWT = (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     // Verify the token using the secret key stored in environment variables
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+      console.log(user); // Log the user
+      console.error(err); // Log any error
       // If the token is invalid or has expired, return a 403 status
       if (err) {
         return res.sendStatus(403);
@@ -28,6 +29,7 @@ const authenticateJWT = (req, res, next) => {
     res.sendStatus(401);
   }
 };
+
 
 // Export the middleware function
 module.exports = authenticateJWT;

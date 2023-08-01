@@ -5,7 +5,7 @@ const adminCheck = require('../middlewares/admin.js');
 const userController = require('../controllers/user_controller');
 
 // Route to create a new user
-router.post('/users', userController.createUser);
+router.post('/users', [authenticateJWT, adminCheck], userController.createUser);
 
 // Route to login
 router.post('/login', userController.loginUser);

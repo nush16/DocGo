@@ -1,4 +1,5 @@
 const Patient = require("../models/patient_model");
+const authenticateJWT = require("../middlewares/auth.js");
 
 // Controller function for creating a patient
 async function createPatient(request, response) {
