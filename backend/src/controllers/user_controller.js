@@ -151,7 +151,7 @@ const editUser = async (req, res) => {
     if (!req.user.isAdmin) {
         return res.status(403).json({ error: 'Unauthorized.' });
       }
-      
+
     try {
       const userId = req.params.id;
   

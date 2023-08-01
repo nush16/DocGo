@@ -71,15 +71,11 @@ app.get('/', (request, response) => {
 
 // Import and setup JWT middleware for authentication
 const jwtMiddleware = require('./middlewares/auth.js');
-app.use(jwtMiddleware());
-
-// Import and setup admin middleware for admin routes
-const adminMiddleware = require('./middlewares/admin');
-app.use('/admin', adminMiddleware);
+app.use(jwtMiddleware); // Removed the extra function call
 
 // Import the user router and setup its routes
 const userRouter = require('./routes/user_router');
-app.use('/user', userRouter);
+app.use('/', userRouter);
 
 // Route for handling 404 errors (no route found)
 app.use('*', (request, response) => {
