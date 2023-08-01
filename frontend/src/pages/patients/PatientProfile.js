@@ -16,9 +16,7 @@ import LockOpenOutline from "mdi-material-ui/LockOpenOutline";
 import InformationOutline from "mdi-material-ui/InformationOutline";
 
 // ** Demo Tabs Imports
-// import TabInfo from "src/views/account-settings/TabInfo";
-import TabAccount from "./Account";
-// import TabSecurity from "src/views/account-settings/TabSecurity";
+import PatientDetails from "./PatientDetails";
 
 const Tab = styled(MuiTab)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
@@ -38,7 +36,7 @@ const TabName = styled("span")(({ theme }) => ({
   },
 }));
 
-const AccountSettings = () => {
+const PatientProfile = () => {
   // ** State
   const [value, setValue] = useState("account");
 
@@ -66,11 +64,11 @@ const AccountSettings = () => {
         </TabList>
 
         <TabPanel sx={{ p: 0 }} value="account">
-          <TabAccount />
+          <PatientDetails />
         </TabPanel>
       </TabContext>
     </Card>
   );
 };
 
-export default AccountSettings;
+export default PatientProfile;

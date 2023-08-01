@@ -64,6 +64,22 @@ const PatientDetails = () => {
               defaultValue="Doe"
             />
           </Grid>
+          <Grid item xs={12} sm={5}>
+            <TextField
+              fullWidth
+              label="Preferred Name"
+              placeholder="John Doe"
+              defaultValue="John Doe"
+            />
+          </Grid>
+          <Grid item xs={12} sm={5}>
+            <TextField
+              fullWidth
+              label="Gender"
+              placeholder="Male"
+              defaultValue="Male"
+            />
+          </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -72,15 +88,6 @@ const PatientDetails = () => {
               placeholder="johnDoe@example.com"
               defaultValue="johnDoe@example.com"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Role</InputLabel>
-              <Select label="Role" defaultValue="admin">
-                <MenuItem value="admin">Admin</MenuItem>
-                <MenuItem value="doctor">Doctor</MenuItem>
-              </Select>
-            </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -94,9 +101,9 @@ const PatientDetails = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Clinic"
-              placeholder="ABC"
-              defaultValue="ABC"
+              label="Notes"
+              placeholder="TBA"
+              defaultValue="TBA"
             />
           </Grid>
 

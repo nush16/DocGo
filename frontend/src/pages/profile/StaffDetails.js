@@ -22,7 +22,7 @@ import Button from "@mui/material/Button";
 //   },
 // }));
 
-const TabAccount = () => {
+const StaffDetails = () => {
   // ** State
   const [openAlert, setOpenAlert] = useState(true);
   const [imgSrc, setImgSrc] = useState("/images/avatars/1.png");
@@ -114,4 +114,4 @@ const TabAccount = () => {
   );
 };
 
-export default TabAccount;
+export default StaffDetails;
