@@ -9,6 +9,7 @@ import PatientsPage from "./pages/patients/PatientsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import StaffsPage from "./pages/staff/StaffPage";
 import AddPatient from "./pages/patients/AddPatient";
+import AddStaff from "./pages/staff/add_staff/AddStaff";
 
 function App() {
   return (
@@ -82,6 +83,14 @@ function App() {
           element={
             <>
               <AddPatient />
+            </>
+          }
+        />
+        <Route
+          path="/add-staff"
+          element={
+            <>
+              <AddStaff />
             </>
           }
         />

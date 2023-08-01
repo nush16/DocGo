@@ -9,6 +9,8 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
+import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   { id: "first_name", label: "First Name", minWidth: 170 },
@@ -100,6 +102,14 @@ export default function StaffStickyHeadTable() {
     setPage(0);
   };
 
+  const navigate = useNavigate();
+
+  const handleAddPatient = () => {
+    console.log("Add Patient clicked!");
+
+    navigate("/add-staff");
+  };
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       {/* Search Bar */}
@@ -160,6 +170,13 @@ export default function StaffStickyHeadTable() {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      <div
+        style={{ display: "flex", justifyContent: "center", padding: "10px" }}
+      >
+        <Button variant="contained" color="primary" onClick={handleAddPatient}>
+          Add Staff
+        </Button>
+      </div>
     </Paper>
   );
 }
