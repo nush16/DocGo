@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Topbar from "../../components/topbar/TopBar";
 import Sidebar from "../../components/sidebar/SideBar";
-import Calendar from "../../components/calendar/Calendar";
+import AppointmentCalendar from "../../components/calendar/Calendar";
 import "../../App.css";
 import { Box, Toolbar } from "@mui/material";
 
@@ -12,7 +12,15 @@ export default function AppointmentPage() {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "70vh",
+        paddingLeft: "20%",
+        paddingRight: "10%",
+      }}
+    >
       <Box sx={{ flexShrink: 0 }}>
         <Topbar
           title="Appointment"
@@ -32,10 +40,8 @@ export default function AppointmentPage() {
           mobileOpen={mobileOpen}
           handleDrawerToggle={handleDrawerToggle}
         />
-        <Box>
-          <Calendar />
-        </Box>
       </Box>
+      <AppointmentCalendar />
     </Box>
   );
 }
