@@ -182,7 +182,6 @@ try {
 const { email, password } = req.body;
 
 // Find the user by email
-console.log("Finding user...");
 const user = await User.findOne({ email });
 
 if (!user) {
@@ -191,7 +190,6 @@ if (!user) {
 }
 
 // Check the password
-console.log("Checking password...");
 const isPasswordValid = await bcrypt.compare(password, user.password);
 
 if (!isPasswordValid) {

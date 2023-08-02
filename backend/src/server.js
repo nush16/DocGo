@@ -81,6 +81,10 @@ app.use('/', userRouter);
 const patientRouter = require('./routes/patient_router');
 app.use('/patients', patientRouter);
 
+// Import and setup appointment router
+const appointmentRouter = require('./routes/appointment_router');
+app.use('/appointments', appointmentRouter);
+
 // Route for handling 404 errors (no route found)
 app.use('*', (request, response) => {
   response.status(404).json({

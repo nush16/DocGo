@@ -1,102 +1,116 @@
+const { Appointment } = require('../models/appointment_model');
+const User = require('../models/user_model');
 const mongoose = require('mongoose');
-const Appointment = require("../models/appointment_model");
 
-// Controller function to create a new appointment
+// Create a new appointment
 const createAppointment = async (req, res) => {
+  const { practitioner, type, patient, startTime, endTime, note } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(practitioner)) {
+    return res.status(400).json({ error: 'Invalid input: practitioner ID is not valid.' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(patient)) {
+    return res.status(400).json({ error: 'Invalid input: patient ID is not valid.' });
+  }
+
+  const user = await User.findById(practitioner);
+  if (!user || !user.isPractitioner) {
+    return res.status(400).json({ error: 'Invalid practitioner.' });
+  }
+
   try {
-    const { practitioner, type, patient, appointmentDateTime, note } = req.body;
-    const newAppointment = await Appointment.create({
+    const newAppointment = new Appointment({
       practitioner,
       type,
       patient,
-      appointmentDateTime,
+      startTime,
+      endTime,
       note
     });
+
+    await newAppointment.save();
     res.status(201).json(newAppointment);
   } catch (error) {
-    console.error('Error creating an appointment:', error);
-    res.status(500).json({ error: 'Error creating an appointment.' });
+    console.error('Error creating appointment:', error);
+    res.status(500).json({ error: 'Error creating appointment.' });
   }
 };
 
-// Controller function to get all appointments
+
+// Get all appointments
 const getAllAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find().populate('practitioner').populate('patient');
+    const appointments = await Appointment.find().populate('practitioner patient', '-password');
     res.status(200).json(appointments);
   } catch (error) {
-    console.error('Error fetching appointments:', error);
     res.status(500).json({ error: 'Error fetching appointments.' });
   }
 };
 
-// Controller function to get an appointment by ID
+// Get an appointment by ID
 const getAppointmentById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid appointment ID.' });
+  }
+
   try {
-    const appointmentId = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
-      return res.status(400).json({ error: 'Invalid appointment ID.' });
-    }
-
-    const appointment = await Appointment.findById(appointmentId).populate('practitioner').populate('patient');
-
+    const appointment = await Appointment.findById(id).populate('practitioner patient', '-password');
     if (!appointment) {
       return res.status(404).json({ error: 'Appointment not found.' });
     }
-
     res.status(200).json(appointment);
   } catch (error) {
-    console.error('Error fetching appointment:', error);
     res.status(500).json({ error: 'Error fetching appointment.' });
   }
 };
 
-// Controller function to update an appointment by ID
-const updateAppointmentById = async (req, res) => {
-  try {
-    const { practitioner, type, patient, appointmentDateTime, note } = req.body;
-    const appointmentId = req.params.id;
+// Update an appointment
+const updateAppointment = async (req, res) => {
+  const { id } = req.params;
+  const { practitioner, type, patient, startTime, endTime, note } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
-      return res.status(400).json({ error: 'Invalid appointment ID.' });
+  if (!mongoose.Types.ObjectId.isValid(id) ||
+      (practitioner && !mongoose.Types.ObjectId.isValid(practitioner)) || 
+      (patient && !mongoose.Types.ObjectId.isValid(patient))) {
+    return res.status(400).json({ error: 'Invalid input.' });
+  }
+
+  if (practitioner) {
+    const user = await User.findById(practitioner);
+    if (!user || !user.isPractitioner) {
+      return res.status(400).json({ error: 'Invalid practitioner.' });
     }
+  }
 
-    const updatedAppointment = await Appointment.findByIdAndUpdate(
-      appointmentId,
-      { practitioner, type, patient, appointmentDateTime, note },
-      { new: true }
-    );
-
-    if (!updatedAppointment) {
+  try {
+    const appointment = await Appointment.findByIdAndUpdate(id, { practitioner, type, patient, startTime, endTime, note }, { new: true }).populate('practitioner patient', '-password');
+    if (!appointment) {
       return res.status(404).json({ error: 'Appointment not found.' });
     }
-
-    res.status(200).json(updatedAppointment);
+    res.status(200).json(appointment);
   } catch (error) {
-    console.error('Error updating appointment:', error);
     res.status(500).json({ error: 'Error updating appointment.' });
   }
 };
 
-// Controller function to delete an appointment by ID
-const deleteAppointmentById = async (req, res) => {
+// Delete an appointment
+const deleteAppointment = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid appointment ID.' });
+  }
+
   try {
-    const appointmentId = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
-      return res.status(400).json({ error: 'Invalid appointment ID.' });
-    }
-
-    const appointment = await Appointment.findByIdAndDelete(appointmentId);
-
+    const appointment = await Appointment.findByIdAndDelete(id);
     if (!appointment) {
       return res.status(404).json({ error: 'Appointment not found.' });
     }
-
     res.status(200).json({ message: 'Appointment deleted successfully.' });
   } catch (error) {
-    console.error('Error deleting appointment:', error);
     res.status(500).json({ error: 'Error deleting appointment.' });
   }
 };
@@ -105,6 +119,6 @@ module.exports = {
   createAppointment,
   getAllAppointments,
   getAppointmentById,
-  updateAppointmentById,
-  deleteAppointmentById
+  updateAppointment,
+  deleteAppointment
 };

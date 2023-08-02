@@ -40,29 +40,29 @@ const seedUsers = async () => {
       isPractitioner: false
     },
     {
-      email: 'jane.doe@example.com',
-      password: 'jane123',
-      first_name: 'Jane',
-      last_name: 'Doe',
-      title: 'Mrs.',
+      email: 'Tom.Brady@example.com',
+      password: 'Tom123',
+      first_name: 'Tom',
+      last_name: 'Brady',
+      title: 'Dr.',
       isAdministrator: false,
       isPractitioner: true
     },
     {
-      email: 'robert.smith@example.com',
-      password: 'robert123',
-      first_name: 'Robert',
-      last_name: 'Smith',
+      email: 'Rajesh.Abeyan@example.com',
+      password: 'Rajesh123',
+      first_name: 'Rajesh',
+      last_name: 'Abeyan',
       title: 'Dr.',
-      isAdministrator: true,
-      isPractitioner: false
+      isAdministrator: false,
+      isPractitioner: true
     },
     {
-      email: 'david.jones@example.com',
-      password: 'david123',
-      first_name: 'David',
-      last_name: 'Jones',
-      title: 'Mr.',
+      email: 'Kate.Lam@example.com	',
+      password: 'Kate123',
+      first_name: 'Kate',
+      last_name: 'Lam',
+      title: 'Dr..',
       isAdministrator: false,
       isPractitioner: true
     }    

@@ -2,11 +2,11 @@
 
 | Feature  | Route | HTTP Method | Outcome | Comments |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| Sign in  | /c  | GET  | Passed  | No issue  |
-| View a single product  | /products/:name  | GET  | Passed  | No issue  |
-| View all carts  | /carts | GET  | Passed  | No issue |
-| View a single cart  | /carts/:cartid  | GET  | Passed  | No issue  |
-| Update the quantity of a product in the existing cart  | /carts/:cartid/:name  | POST  | Failed  | cartid in the url can not match the existing cart id in the database, even though they return the same content. |
+| Sign in  | /  | POST  | Passed  | Return with a token  |
+| Create User | /users  | POST  | Passed  | No issue  |
+| View all users  | /users | GET  | Passed  | No issue |
+| View user by ID  | /users/:userid  | GET  | Passed  | No issue  |
+| Edit User  | /carts/:cartid/:name  | POST  | Failed  | cartid in the url can not match the existing cart id in the database, even though they return the same content. |
 | Update the quantity of a product in the existing cart  | /carts/:cartid/:name  | POST  | Passed  | No issue, added toString() method to the cartid and now they can correctly matched. |
 | Add a new product to an existing cart  | /carts/:cartid/:name  | POST  | Passed  | No issue |
 | Create new cart  | /carts/null/:name  | POST  | Passed  | No issue |
