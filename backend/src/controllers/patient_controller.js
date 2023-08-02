@@ -7,6 +7,7 @@ async function createPatient(request, response) {
     const newPatient = await Patient.create(request.body);
     response.status(201).json(newPatient);
   } catch (err) {
+    console.error(err);
     response.status(500).json({ error: "Failed to create the patient" });
   }
 }

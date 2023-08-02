@@ -2,7 +2,7 @@
 
 | Feature  | Route | HTTP Method | Outcome | Comments |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| Signin  | /products  | GET  | Passed  | No issue  |
+| Sign in  | /c  | GET  | Passed  | No issue  |
 | View a single product  | /products/:name  | GET  | Passed  | No issue  |
 | View all carts  | /carts | GET  | Passed  | No issue |
 | View a single cart  | /carts/:cartid  | GET  | Passed  | No issue  |

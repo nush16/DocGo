@@ -12,8 +12,8 @@ const authenticateJWT = (req, res, next) => {
 
     // Verify the token using the secret key stored in environment variables
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
-      console.log(user); // Log the user
-      console.error(err); // Log any error
+      // console.log(user); // Log the user
+      // console.error(err); // Log any error
       // If the token is invalid or has expired, return a 403 status
       if (err) {
         return res.sendStatus(403);

@@ -79,7 +79,7 @@ app.use('/', userRouter);
 
 // Import and setup patient router
 const patientRouter = require('./routes/patient_router');
-app.use('/patient', patientRouter);
+app.use('/patients', patientRouter);
 
 // Route for handling 404 errors (no route found)
 app.use('*', (request, response) => {
