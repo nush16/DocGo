@@ -1,78 +1,124 @@
-const Appointment = require("../models/appointment_model");
-const User = require("../models/user_model");
-const SignUp = require("../models/signup_model");
-const Staff = require("../models/staff_model");
-const Patient = require("../models/patient_model");
+const { Appointment } = require('../models/appointment_model');
+const User = require('../models/user_model');
+const mongoose = require('mongoose');
 
-// Controller to create a new appointment
-async function createAppointment(request, response) {
-  try {
-    const newAppointment = await Appointment.create(request.body);
-    response.status(201).json(newAppointment);
-  } catch (err) {
-    response.status(500).json({ error: "Failed to create the appointment" });
+// Create a new appointment
+const createAppointment = async (req, res) => {
+  const { practitioner, type, patient, startTime, endTime, note } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(practitioner)) {
+    return res.status(400).json({ error: 'Invalid input: practitioner ID is not valid.' });
   }
-}
 
-// Controller to retrieve all appointments
-async function getAllAppointments(request, response) {
-  try {
-    const appointments = await Appointment.find();
-    response.status(200).json(appointments);
-  } catch (err) {
-    response.status(500).json({ error: "Failed to fetch appointments" });
+  if (!mongoose.Types.ObjectId.isValid(patient)) {
+    return res.status(400).json({ error: 'Invalid input: patient ID is not valid.' });
   }
-}
 
-// Controller to retrieve a single appointment by ID
-async function getAppointmentById(request, response) {
+  const user = await User.findById(practitioner);
+  if (!user || !user.isPractitioner) {
+    return res.status(400).json({ error: 'Invalid practitioner.' });
+  }
+
   try {
-    const appointment = await Appointment.findById(request.params.id);
+    const newAppointment = new Appointment({
+      practitioner,
+      type,
+      patient,
+      startTime,
+      endTime,
+      note
+    });
+
+    await newAppointment.save();
+    res.status(201).json(newAppointment);
+  } catch (error) {
+    console.error('Error creating appointment:', error);
+    res.status(500).json({ error: 'Error creating appointment.' });
+  }
+};
+
+
+// Get all appointments
+const getAllAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find().populate('practitioner patient', '-password');
+    res.status(200).json(appointments);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching appointments.' });
+  }
+};
+
+// Get an appointment by ID
+const getAppointmentById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid appointment ID.' });
+  }
+
+  try {
+    const appointment = await Appointment.findById(id).populate('practitioner patient', '-password');
     if (!appointment) {
-      return response.status(404).json({ error: "Appointment not found" });
+      return res.status(404).json({ error: 'Appointment not found.' });
     }
-    response.status(200).json(appointment);
-  } catch (err) {
-    response.status(500).json({ error: "Failed to fetch the appointment" });
+    res.status(200).json(appointment);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching appointment.' });
   }
-}
+};
 
-// Controller to update an appointment by ID
-async function updateAppointmentById(request, response) {
-  try {
-    const updatedAppointment = await Appointment.findByIdAndUpdate(
-      request.params.id,
-      request.body,
-      { new: true }
-    );
-    if (!updatedAppointment) {
-      return response.status(404).json({ error: "Appointment not found" });
-    }
-    response.status(200).json(updatedAppointment);
-  } catch (err) {
-    response.status(500).json({ error: "Failed to update the appointment" });
-  }
-}
+// Update an appointment
+const updateAppointment = async (req, res) => {
+  const { id } = req.params;
+  const { practitioner, type, patient, startTime, endTime, note } = req.body;
 
-// Controller to delete an appointment by ID
-async function deleteAppointmentById(request, response) {
-  try {
-    const deletedAppointment = await Appointment.findByIdAndRemove(
-      request.params.id
-    );
-    if (!deletedAppointment) {
-      return response.status(404).json({ error: "Appointment not found" });
-    }
-    response.status(200).json({ message: "Appointment deleted successfully" });
-  } catch (err) {
-    response.status(500).json({ error: "Failed to delete the appointment" });
+  if (!mongoose.Types.ObjectId.isValid(id) ||
+      (practitioner && !mongoose.Types.ObjectId.isValid(practitioner)) || 
+      (patient && !mongoose.Types.ObjectId.isValid(patient))) {
+    return res.status(400).json({ error: 'Invalid input.' });
   }
-}
+
+  if (practitioner) {
+    const user = await User.findById(practitioner);
+    if (!user || !user.isPractitioner) {
+      return res.status(400).json({ error: 'Invalid practitioner.' });
+    }
+  }
+
+  try {
+    const appointment = await Appointment.findByIdAndUpdate(id, { practitioner, type, patient, startTime, endTime, note }, { new: true }).populate('practitioner patient', '-password');
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found.' });
+    }
+    res.status(200).json(appointment);
+  } catch (error) {
+    res.status(500).json({ error: 'Error updating appointment.' });
+  }
+};
+
+// Delete an appointment
+const deleteAppointment = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid appointment ID.' });
+  }
+
+  try {
+    const appointment = await Appointment.findByIdAndDelete(id);
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found.' });
+    }
+    res.status(200).json({ message: 'Appointment deleted successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error deleting appointment.' });
+  }
+};
 
 module.exports = {
   createAppointment,
   getAllAppointments,
   getAppointmentById,
-  updateAppointmentById,
-  deleteAppointmentById,
+  updateAppointment,
+  deleteAppointment
 };

@@ -1,21 +1,28 @@
-const express = require("express");
-const userRouter = express.Router();
-const {
-  createUser,
-  getUserById,
-  getAllUsers,
-} = require("../controllers/user_controller");
-
-// User routes
+const express = require('express');
+const router = express.Router();
+const authenticateJWT = require('../middlewares/auth.js');
+const adminCheck = require('../middlewares/admin.js');
+const userController = require('../controllers/user_controller');
 
 // Route to create a new user
-userRouter.post("/adduser", createUser);
+router.post('/users', [authenticateJWT, adminCheck], userController.createUser);
 
-// Route to get a specific user by ID
-userRouter.get("/users/:id", getUserById);
+// Route to login
+router.post('/login', userController.loginUser);
+
+// Route to get a user by ID
+router.get('/users/:id', authenticateJWT, userController.getUserById);
 
 // Route to get all users
-userRouter.get("/allusers", getAllUsers);
+router.get('/users', [authenticateJWT, adminCheck], userController.getAllUsers);
 
-// Exporting the userRouter to make it accessible from other parts of the application
-module.exports = userRouter;
+// Route to update a user by ID
+router.put('/users/:id', authenticateJWT, userController.editUser);
+
+// Route to change password for a user
+router.put('/users/:id/password', authenticateJWT, userController.changePassword);
+
+// Route to delete a user by ID
+router.delete('/users/:id', [authenticateJWT, adminCheck], userController.deleteUser);
+
+module.exports = router;
