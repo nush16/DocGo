@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import TopBar from "../../components/topbar/TopBar";
 import Sidebar from "../../components/sidebar/SideBar";
-import Calendar from "../../components/calendar/Calendar";
 import "../../App.css";
 import { Box, Toolbar } from "@mui/material";
-import PatientStickyHeadTable from "./PatientTable";
+import PatientTable from "./PatientTable";
 
 export default function PatientsPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -33,7 +32,7 @@ export default function PatientsPage() {
           mobileOpen={mobileOpen}
           handleDrawerToggle={handleDrawerToggle}
         />
-        <PatientStickyHeadTable />
+        <PatientTable />
         <Toolbar />
       </Box>
     </Box>

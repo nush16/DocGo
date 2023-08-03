@@ -8,7 +8,7 @@ import AppointmentPage from "./pages/appointments/AppointmentPage";
 import PatientsPage from "./pages/patients/PatientsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import StaffsPage from "./pages/staff/StaffPage";
-import AddPatient from "./pages/patients/AddPatient";
+// import AddPatient from "./pages/patients/add_patient/AddPatient";
 import AddStaff from "./pages/staff/add_staff/AddStaff";
 
 function App() {
@@ -78,14 +78,14 @@ function App() {
             </>
           }
         />
-        <Route
+        {/* <Route
           path="/add-patient"
           element={
             <>
               <AddPatient />
             </>
           }
-        />
+        /> */}
         <Route
           path="/add-staff"
           element={

@@ -1,180 +1,224 @@
+// const initialRows = [
+//   {
+//     id: 1, // Unique identifier for the row
+//     lastName: "Snow",
+//     firstName: "Jon",
+//     title: "Mr",
+//     gender: "Male",
+//     dateOfBirth: "1980-12-03",
+//     email: "Jon.Snow@example.com",
+//     phone: "555-1234",
+//   },
+//   {
+//     id: 2, // Unique identifier for the row
+//     lastName: "Harvey",
+//     firstName: "Tom",
+//     title: "Mr",
+//     gender: "Male",
+//     dateOfBirth: "1980-12-03",
+//     email: "Tom.Harvey@example.com",
+//     phone: "555-1234",
+//   },
+//   // Add more rows with 'email', 'phone', and 'nextAppointment' data
+// ];
+
 import * as React from "react";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import InputBase from "@mui/material/InputBase";
-import SearchIcon from "@mui/icons-material/Search";
+import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
 
 const columns = [
-  { id: "first_name", label: "First Name", minWidth: 170 },
-  { id: "last_name", label: "Last Name", minWidth: 100 },
-  {
-    id: "email",
-    label: "Email",
-    minWidth: 170,
-    align: "right",
-    format: (value) => value.toLocaleString("en-US"),
-  },
-  {
-    id: "phone",
-    label: "Phone",
-    minWidth: 170,
-    align: "right",
-  },
-  {
-    id: "appointment",
-    label: "Next Appointment",
-    minWidth: 170,
-    align: "right",
-    format: (value) => value.toLocaleString("en-US"),
-  },
+  { field: "title", headerName: "Title", width: 100 },
+  { field: "firstName", headerName: "First Name", width: 200 },
+  { field: "lastName", headerName: "Last Name", width: 200 },
+  { field: "gender", headerName: "Gender", width: 150 },
+  { field: "dateOfBirth", headerName: "Date of Birth", width: 150 },
+  { field: "email", headerName: "Email", width: 220 },
+  { field: "phone", headerName: "Phone", width: 180 },
 ];
 
-function createData(first_name, last_name, email, phone, appointment) {
-  return { first_name, last_name, email, phone, appointment };
-}
+export default function PatientTable() {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [tableData, setTableData] = React.useState([
+    {
+      id: 1, // Unique identifier for the row
+      lastName: "Snow",
+      firstName: "Jon",
+      title: "Mr",
+      gender: "Male",
+      dateOfBirth: "1980-12-03",
+      email: "Jon.Snow@example.com",
+      phone: "555-1234",
+    },
+    {
+      id: 2, // Unique identifier for the row
+      lastName: "Harvey",
+      firstName: "Tom",
+      title: "Mr",
+      gender: "Male",
+      dateOfBirth: "1980-12-03",
+      email: "Tom.Harvey@example.com",
+      phone: "555-1234",
+    },
+    // Add more rows with 'email', 'phone', and 'nextAppointment' data
+  ]);
+  const [formData, setFormData] = React.useState({
+    title: "",
+    firstName: "",
+    lastName: "",
+    gender: "",
+    dateOfBirth: "",
+    email: "",
+    phone: "",
+  });
 
-const rows = [
-  createData("John", "IN", "John.In@example.com", 3287263, "11 / 05 / 2024"),
-  createData("Sally", "CN", "Sally.Cn@example.com", 9596961, "11 / 05 / 2024"),
-  createData("Kris", "IT", "Kris.It@example.com", 301340, "11 / 05 / 2024"),
-  createData(
-    "Bianca",
-    "US",
-    "Bianca.Us@example.com",
-    9833520,
-    "11 / 05 / 2024"
-  ),
-  createData("Tom", "CA", "Tom.Ca@example.com", 9984670, "11 / 05 / 2024"),
-  createData("Timmy", "AU", "Timmy.Au@example.com", 7692024, "11 / 05 / 2024"),
-  createData("Sally", "DE", "Sally.De@example.com", 357578, "11 / 05 / 2024"),
-  createData("Nick", "IE", "Nick.Ie@example.com", 70273, "11 / 05 / 2024"),
-  createData("Gayle", "MX", "Gayle.Mx@example.com", 1972550, "11 / 05 / 2024"),
-  createData("Matt", "JP", "Matt.Jp@example.com", 377973, "11 / 05 / 2024"),
-  createData("Franco", "FR", "Franco.Fr@example.com", 640679, "11 / 05 / 2024"),
-  createData("Nat", "GB", "Nat.Gb@example.com", 242495, "11 / 05 / 2024"),
-  createData(
-    "Karina",
-    "RU",
-    "Kate.Lam@example.com",
-    17098246,
-    "11 / 05 / 2024"
-  ),
-  createData("Ian", "NG", "Kate.Lam@example.com", 923768, "11 / 05 / 2024"),
-  createData("Bob", "BR", "Kate.Lam@example.com", 8515767, "11 / 05 / 2024"),
-];
-
-export default function PatientStickyHeadTable() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [filteredRows, setFilteredRows] = React.useState(rows);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
-  const handleSearchInputChange = (event) => {
-    const value = event.target.value;
-    setSearchQuery(value);
-
-    // Filter the rows based on the search query
-    const filteredRows = rows.filter(
-      (row) =>
-        row.first_name.toLowerCase().includes(value.toLowerCase()) ||
-        row.last_name.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredRows(filteredRows);
-    setPage(0);
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    // Update the table data with the new row
+    const newRow = { ...formData, id: tableData.length + 1 };
+    setTableData([...tableData, newRow]);
+    handleCloseModal();
+    // Reset the form fields
+    setFormData({
+      title: "",
+      firstName: "",
+      lastName: "",
+      gender: "",
+      dateOfBirth: "",
+      email: "",
+      phone: "",
+    });
   };
 
-  const navigate = useNavigate();
-
-  const handleAddPatient = () => {
-    console.log("Add Patient clicked!");
-
-    navigate("/add-patient");
+  const handleFormReset = () => {
+    // Reset the form fields
+    setFormData({
+      title: "",
+      firstName: "",
+      lastName: "",
+      gender: "",
+      dateOfBirth: "",
+      email: "",
+      phone: "",
+    });
   };
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      {/* Search Bar */}
-      <div style={{ display: "flex", alignItems: "center", padding: "10px" }}>
-        <SearchIcon style={{ marginRight: "8px" }} />
-        <InputBase
-          placeholder="Search by Name..."
-          value={searchQuery}
-          onChange={handleSearchInputChange}
-          style={{ flex: 1 }}
-        />
-      </div>
-
-      {/* Table */}
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredRows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={filteredRows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+    <div style={{ height: 400, width: "100%" }}>
+      <DataGrid
+        rows={tableData}
+        columns={columns}
+        pageSize={5}
+        checkboxSelection
       />
-      <div
-        style={{ display: "flex", justifyContent: "center", padding: "10px" }}
+      <Button variant="contained" onClick={handleOpenModal}>
+        Add Patient
+      </Button>
+      <Modal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-title"
       >
-        <Button variant="contained" color="primary" onClick={handleAddPatient}>
-          Add Patient
-        </Button>
-      </div>
-    </Paper>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            borderRadius: 4, // Rounded corners
+            p: 4,
+          }}
+        >
+          <h2 id="modal-title">Add Patient</h2>
+          <form onSubmit={handleFormSubmit}>
+            <TextField
+              label="Title"
+              fullWidth
+              sx={{ my: 1 }}
+              value={formData.title}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
+            />
+            <TextField
+              label="First Name"
+              fullWidth
+              sx={{ my: 1 }}
+              value={formData.firstName}
+              onChange={(e) =>
+                setFormData({ ...formData, firstName: e.target.value })
+              }
+            />
+            <TextField
+              label="Last Name"
+              fullWidth
+              sx={{ my: 1 }}
+              value={formData.lastName}
+              onChange={(e) =>
+                setFormData({ ...formData, lastName: e.target.value })
+              }
+            />
+            <TextField
+              label="Gender"
+              fullWidth
+              sx={{ my: 1 }}
+              value={formData.gender}
+              onChange={(e) =>
+                setFormData({ ...formData, gender: e.target.value })
+              }
+            />
+            <TextField
+              label="Date of Birth"
+              fullWidth
+              sx={{ my: 1 }}
+              value={formData.dateOfBirth}
+              onChange={(e) =>
+                setFormData({ ...formData, dateOfBirth: e.target.value })
+              }
+            />
+            <TextField
+              label="Email"
+              fullWidth
+              sx={{ my: 1 }}
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+            />
+            <TextField
+              label="Phone"
+              fullWidth
+              sx={{ my: 1 }}
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+            />
+            <Button variant="contained" color="primary" type="submit">
+              Save Patient
+            </Button>{" "}
+            <Button variant="contained" onClick={handleFormReset}>
+              Reset
+            </Button>{" "}
+            <Button variant="contained" onClick={handleCloseModal}>
+              Cancel
+            </Button>
+          </form>
+        </Box>
+      </Modal>
+    </div>
   );
 }

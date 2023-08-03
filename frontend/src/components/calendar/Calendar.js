@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
-import { Button, Modal as MuiModal, TextField } from "@mui/material";
+import { Button, Modal as MuiModal, TextField, MenuItem } from "@mui/material";
 import { Box } from "@mui/system";
 
 const localizer = momentLocalizer(moment);
@@ -31,11 +31,15 @@ const initialAppointments = [
 
 const AppointmentEvent = ({ event }) => (
   <span>
-    <strong>{event.notes}</strong>
+    <strong>{formatEventTitle(event)}</strong>
     <br />
-    <em>{event.patient}</em>
+    <em>{event.doctor}</em>
   </span>
 );
+
+const formatEventTitle = (event) => {
+  return `${event.type}: ${event.patient}`;
+};
 
 const AppointmentCalendar = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -46,6 +50,7 @@ const AppointmentCalendar = () => {
   const [showOverlapError, setShowOverlapError] = useState(false);
   const [isAddAppointmentModalOpen, setAddAppointmentModalOpen] =
     useState(false);
+  const [appointmentType, setAppointmentType] = useState("");
 
   const handleCellClick = (event) => {
     setSelectedAppointment(event);
@@ -108,7 +113,6 @@ const AppointmentCalendar = () => {
       setShowOverlapError(true);
       return;
     }
-
     if (editedAppointment && editedAppointment.id) {
       setAppointments((prevAppointments) => {
         const updatedAppointments = prevAppointments.map((appointment) =>
@@ -119,10 +123,10 @@ const AppointmentCalendar = () => {
         return updatedAppointments;
       });
     } else {
-      // This is a new appointment, so add it to the list
+      // This is a new appointment, so add it to the list with the appointment type
       setAppointments((prevAppointments) => [
         ...prevAppointments,
-        { ...editedAppointment, id: Date.now() }, // Generate a unique ID for new appointment
+        { ...editedAppointment, id: Date.now(), type: appointmentType }, // Include the appointment type
       ]);
     }
 
@@ -158,6 +162,7 @@ const AppointmentCalendar = () => {
       notes: "",
     };
     setEditedAppointment(newAppointment);
+    setAppointmentType(""); // Set the appointment type to an empty string
     setAddAppointmentModalOpen(true);
   };
 
@@ -166,7 +171,10 @@ const AppointmentCalendar = () => {
       <Calendar
         key={calendarKey}
         localizer={localizer}
-        events={appointments}
+        events={appointments.map((appointment) => ({
+          ...appointment,
+          title: formatEventTitle(appointment),
+        }))}
         startAccessor="start"
         endAccessor="end"
         style={{ height: 700 }}
@@ -180,10 +188,19 @@ const AppointmentCalendar = () => {
           event: AppointmentEvent,
         }}
       />
-      <Button variant="contained" onClick={handleAddAppointment}>
-        Add Appointment
-      </Button>
-
+      <div>
+        <Button
+          variant="contained"
+          onClick={handleAddAppointment}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "10px",
+          }}
+        >
+          Add Appointment
+        </Button>
+      </div>
       <MuiModal
         open={isAddAppointmentModalOpen || selectedAppointment !== null}
         onClose={handleCloseModal}
@@ -228,6 +245,23 @@ const AppointmentCalendar = () => {
                 sx={{ mb: 2 }}
                 onChange={(e) => handleFormChange("doctor", e.target.value)}
               />
+              <TextField
+                select
+                label="Appointment Type"
+                value={appointmentType}
+                fullWidth
+                sx={{ mb: 2 }}
+                onChange={(e) => setAppointmentType(e.target.value)}
+              >
+                <MenuItem value="first appointment">First Appointment</MenuItem>
+                <MenuItem value="standard appointment">
+                  Standard Appointment
+                </MenuItem>
+                <MenuItem value="long appointment">Long Appointment</MenuItem>
+                <MenuItem value="follow up appointment">
+                  Follow-up Appointment
+                </MenuItem>
+              </TextField>
               {/* Editable Date Field */}
               <TextField
                 label="Date"
