@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import "./calendar.css";
 import moment from "moment";
 import { Button, Modal as MuiModal, TextField } from "@mui/material";
 import { Box } from "@mui/system";
@@ -45,6 +44,8 @@ const AppointmentCalendar = () => {
   const [calendarKey, setCalendarKey] = useState(0);
   const [errorMessage, setErrorMessage] = useState(null);
   const [showOverlapError, setShowOverlapError] = useState(false);
+  const [isAddAppointmentModalOpen, setAddAppointmentModalOpen] =
+    useState(false);
 
   const handleCellClick = (event) => {
     setSelectedAppointment(event);
@@ -56,6 +57,7 @@ const AppointmentCalendar = () => {
     setEditedAppointment(null);
     setShowOverlapError(false); // Reset the overlap error state
     setErrorMessage(null); // Reset the error message
+    setAddAppointmentModalOpen(false); // Set the state to false to close the modal
   };
 
   const setError = (message) => {
@@ -126,6 +128,7 @@ const AppointmentCalendar = () => {
 
     setShowOverlapError(false); // Reset overlap error state when appointment is successfully added/updated
     handleCloseModal();
+    setAddAppointmentModalOpen(false);
   };
 
   const handleFormChange = (field, value) => {
@@ -143,6 +146,21 @@ const AppointmentCalendar = () => {
     setCalendarKey((prevKey) => prevKey + 1);
   }, [appointments]);
 
+  const handleAddAppointment = () => {
+    // Set the editedAppointment state to a new empty appointment object
+    const newAppointment = {
+      id: null,
+      title: "",
+      start: new Date(),
+      end: new Date(),
+      patient: "",
+      doctor: "",
+      notes: "",
+    };
+    setEditedAppointment(newAppointment);
+    setAddAppointmentModalOpen(true);
+  };
+
   return (
     <div>
       <Calendar
@@ -151,7 +169,7 @@ const AppointmentCalendar = () => {
         events={appointments}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 500 }}
+        style={{ height: 700 }}
         views={["day", "week", "month"]}
         defaultView="day"
         // Set the minimum and maximum times for appointments on the calendar
@@ -162,9 +180,12 @@ const AppointmentCalendar = () => {
           event: AppointmentEvent,
         }}
       />
+      <Button variant="contained" onClick={handleAddAppointment}>
+        Add Appointment
+      </Button>
 
       <MuiModal
-        open={selectedAppointment !== null}
+        open={isAddAppointmentModalOpen || selectedAppointment !== null}
         onClose={handleCloseModal}
         aria-labelledby="appointment-details-title"
         sx={{
@@ -181,7 +202,6 @@ const AppointmentCalendar = () => {
             borderRadius: 4,
           }}
         >
-          <h2 id="appointment-details-title">Appointment Details</h2>
           {errorMessage && (
             <div style={{ color: "red", marginBottom: "10px" }}>
               {errorMessage}
