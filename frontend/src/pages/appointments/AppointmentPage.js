@@ -3,10 +3,13 @@ import Topbar from "../../components/topbar/TopBar";
 import Sidebar from "../../components/sidebar/SideBar";
 import AppointmentCalendar from "../../components/calendar/Calendar";
 import "../../App.css";
-import { Box, Toolbar } from "@mui/material";
+import { Box, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 
 export default function AppointmentPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -14,11 +17,10 @@ export default function AppointmentPage() {
   return (
     <Box
       sx={{
-        display: "flex",
         flexDirection: "column",
         height: "70vh",
-        paddingLeft: "20%",
-        paddingRight: "10%",
+        paddingLeft: isMobile ? "10px" : "250px",
+        paddingRight: "10px",
       }}
     >
       <Box sx={{ flexShrink: 0 }}>
@@ -33,7 +35,7 @@ export default function AppointmentPage() {
           display: "flex",
           flexGrow: 1,
           overflow: "auto",
-          marginTop: "64px",
+          marginTop: "80px",
         }}
       >
         <Sidebar
