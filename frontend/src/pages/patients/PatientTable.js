@@ -1,33 +1,12 @@
-// const initialRows = [
-//   {
-//     id: 1, // Unique identifier for the row
-//     lastName: "Snow",
-//     firstName: "Jon",
-//     title: "Mr",
-//     gender: "Male",
-//     dateOfBirth: "1980-12-03",
-//     email: "Jon.Snow@example.com",
-//     phone: "555-1234",
-//   },
-//   {
-//     id: 2, // Unique identifier for the row
-//     lastName: "Harvey",
-//     firstName: "Tom",
-//     title: "Mr",
-//     gender: "Male",
-//     dateOfBirth: "1980-12-03",
-//     email: "Tom.Harvey@example.com",
-//     phone: "555-1234",
-//   },
-//   // Add more rows with 'email', 'phone', and 'nextAppointment' data
-// ];
-
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
+import isAlpha from "validator/lib/isAlpha";
+import isDate from "validator/lib/isDate";
+import isNumeric from "validator/lib/isNumeric";
 
 const columns = [
   { field: "title", headerName: "Title", width: 100 },
@@ -39,8 +18,14 @@ const columns = [
   { field: "phone", headerName: "Phone", width: 180 },
 ];
 
+const isAlphabetic = (value) => isAlpha(value.replace(/\s/g, "")); // Remove spaces for names
+const isDateValid = (value) => isDate(value, { format: "MM/DD/YYYY" });
+const isNumericValid = (value) => isNumeric(value);
+
 export default function PatientTable() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [selectedRows, setSelectedRows] = React.useState([]);
+  const [formError, setFormError] = React.useState("");
   const [tableData, setTableData] = React.useState([
     {
       id: 1, // Unique identifier for the row
@@ -74,6 +59,10 @@ export default function PatientTable() {
     phone: "",
   });
 
+  const handleRowSelected = (params) => {
+    setSelectedRows(params.selectionModel);
+  };
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -84,8 +73,59 @@ export default function PatientTable() {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
+
+    // Check if any required field is empty
+    const requiredFields = [
+      "title",
+      "firstName",
+      "lastName",
+      "gender",
+      "dateOfBirth",
+      "email",
+      "phone",
+    ];
+    const hasEmptyField = requiredFields.some((field) => !formData[field]);
+
+    if (hasEmptyField) {
+      setFormError("Please fill out all fields.");
+      return;
+    }
+
+    // Validate alphabetic fields
+    const alphabeticFields = ["title", "firstName", "lastName", "gender"];
+    const hasInvalidAlphabeticField = alphabeticFields.some(
+      (field) => !isAlphabetic(formData[field])
+    );
+
+    if (hasInvalidAlphabeticField) {
+      setFormError(
+        "Please enter valid alphabetic characters for Title, First Name, Last Name, and Gender."
+      );
+      return;
+    }
+
+    // Validate date format
+    if (!isDateValid(formData.dateOfBirth)) {
+      setFormError("Please enter a valid date for Date of Birth.");
+      return;
+    }
+
+    // Convert date format to "MM/DD/YYYY"
+    const [year, month, day] = formData.dateOfBirth.split("-");
+    const formattedDateOfBirth = `${month}/${day}/${year}`;
+
+    // Validate numeric phone
+    if (!isNumericValid(formData.phone)) {
+      setFormError("Please enter a valid numeric phone number.");
+      return;
+    }
+
     // Update the table data with the new row
-    const newRow = { ...formData, id: tableData.length + 1 };
+    const newRow = {
+      ...formData,
+      id: tableData.length + 1,
+      dateOfBirth: formattedDateOfBirth,
+    };
     setTableData([...tableData, newRow]);
     handleCloseModal();
     // Reset the form fields
@@ -98,6 +138,8 @@ export default function PatientTable() {
       email: "",
       phone: "",
     });
+    // Clear the form error message
+    setFormError("");
   };
 
   const handleFormReset = () => {
@@ -119,7 +161,9 @@ export default function PatientTable() {
         rows={tableData}
         columns={columns}
         pageSize={5}
-        checkboxSelection
+        checkboxSelection={true}
+        getRowId={(row) => row.id}
+        onRowSelected={handleRowSelected}
       />
       <Button variant="contained" onClick={handleOpenModal}>
         Add Patient
@@ -143,6 +187,7 @@ export default function PatientTable() {
           }}
         >
           <h2 id="modal-title">Add Patient</h2>
+          {formError && <p style={{ color: "red" }}>{formError}</p>}
           <form onSubmit={handleFormSubmit}>
             <TextField
               label="Title"
