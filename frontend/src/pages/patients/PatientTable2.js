@@ -10,6 +10,8 @@ import {
   TextField,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import UpdateIcon from "@mui/icons-material/Update";
+import axios from "axios"; // Add axios library
 
 const initialData = [
   {
@@ -24,6 +26,15 @@ const initialData = [
   },
   // Add more data here
 ];
+
+function formatDate(dob) {
+  const date = new Date(dob);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  const year = date.getFullYear();
+
+  return day + "/" + month + "/" + year;
+}
 
 const DataTable = () => {
   const [rows, setRows] = useState(initialData);
@@ -43,17 +54,44 @@ const DataTable = () => {
   });
 
   const columns = [
-    { field: "id", hide: true },
+    { field: "id", hide: true, width: 50 },
     { field: "title", headerName: "Title", width: 100 },
     { field: "firstName", headerName: "First Name", width: 150 },
     { field: "lastName", headerName: "Last Name", width: 150 },
     { field: "gender", headerName: "Gender", width: 100 },
-    { field: "dob", headerName: "DOB", width: 100 },
+    {
+      field: "dob",
+      headerName: "DOB",
+      width: 100,
+      valueGetter: (params) => formatDate(params.value),
+    },
     { field: "email", headerName: "Email", width: 200 },
     { field: "phone", headerName: "Phone", width: 150 },
     {
+      field: "update",
+      headerName: "Update",
+      sortable: false,
+      width: 100,
+      disableClickEventBubbling: true,
+      renderCell: (params) => {
+        const onClick = () => {
+          setDialogData({ ...params.row });
+          setOperation("update");
+          setDialogOpen(true);
+        };
+
+        return (
+          <UpdateIcon
+            color="primary"
+            style={{ cursor: "pointer" }}
+            onClick={onClick}
+          />
+        );
+      },
+    },
+    {
       field: "delete",
-      headerName: "Delete",
+      headerName: "Remove",
       sortable: false,
       width: 100,
       disableClickEventBubbling: true,
@@ -123,14 +161,47 @@ const DataTable = () => {
     setDialogOpen(false);
   };
 
-  const deleteData = () => {
-    setRows(rows.filter((row) => !selectionModel.includes(row.id)));
+  //   const deleteData = () => {
+  //     setRows(rows.filter((row) => !selectionModel.includes(row.id)));
+  //   };
+
+  // Function to create/update a patient using API
+  const savePatient = async () => {
+    try {
+      if (operation === "update") {
+        await axios.put(`/api/patients/${dialogData.id}`, dialogData);
+        setRows(
+          rows.map((row) => (row.id === dialogData.id ? dialogData : row))
+        );
+      } else {
+        const response = await axios.post("/api/patients", dialogData);
+        const newPatient = response.data;
+        setRows([...rows, newPatient]);
+      }
+      setOperation("");
+      setDialogOpen(false);
+    } catch (error) {
+      console.error("Error saving patient:", error);
+    }
+  };
+
+  // Function to delete patient(s) using API
+  const deleteData = async () => {
+    try {
+      const response = await axios.delete("/api/patients", {
+        data: { ids: selectionModel }, // Assuming you want to delete multiple patients at once
+      });
+      if (response.data.success) {
+        setRows(rows.filter((row) => !selectionModel.includes(row.id)));
+        setSelectionModel([]);
+      }
+    } catch (error) {
+      console.error("Error deleting patient(s):", error);
+    }
   };
 
   return (
     <div style={{ height: 400, width: "100%" }}>
-      <button onClick={openAddDialog}>Add</button>
-      <button onClick={openUpdateDialog}>Update</button>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -140,9 +211,19 @@ const DataTable = () => {
           setSelectionModel(newSelection);
         }}
       />
+      <div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginRight: 10 }}
+          onClick={openAddDialog}
+        >
+          Add Patient
+        </Button>
+      </div>
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>
-          {operation.charAt(0).toUpperCase() + operation.slice(1)} Row
+          {operation.charAt(0).toUpperCase() + operation.slice(1)} Patient
         </DialogTitle>
         <DialogContent>
           <TextField
