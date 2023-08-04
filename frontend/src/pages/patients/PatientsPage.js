@@ -3,7 +3,7 @@ import TopBar from "../../components/topbar/TopBar";
 import Sidebar from "../../components/sidebar/SideBar";
 import "../../App.css";
 import { Box, Toolbar } from "@mui/material";
-import PatientTable from "./PatientTable";
+import DataTable from "./PatientTable2";
 
 export default function PatientsPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function PatientsPage() {
           mobileOpen={mobileOpen}
           handleDrawerToggle={handleDrawerToggle}
         />
-        <PatientTable />
+        <DataTable />
         <Toolbar />
       </Box>
     </Box>
