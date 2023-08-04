@@ -31,6 +31,7 @@ const seedUsers = async () => {
   // Data for users
   const users = [
     {
+      _id: '64ca2fd10d3bd394aef24d5d',
       email: 'admin@example.com',
       password: 'admin123',
       first_name: 'Admin', // use the correct field name as defined in your schema
@@ -40,6 +41,7 @@ const seedUsers = async () => {
       isPractitioner: false
     },
     {
+      _id: '64ca2fd10d3bd394aef24d63',
       email: 'Tom.Brady@example.com',
       password: 'Tom123',
       first_name: 'Tom',
@@ -49,6 +51,7 @@ const seedUsers = async () => {
       isPractitioner: true
     },
     {
+      _id: '64ca2fd10d3bd394aef24d65',
       email: 'Rajesh.Abeyan@example.com',
       password: 'Rajesh123',
       first_name: 'Rajesh',
@@ -58,11 +61,12 @@ const seedUsers = async () => {
       isPractitioner: true
     },
     {
+      _id: '64ca2fd10d3bd394aef24d67',
       email: 'Kate.Lam@example.com	',
       password: 'Kate123',
       first_name: 'Kate',
       last_name: 'Lam',
-      title: 'Dr..',
+      title: 'Dr.',
       isAdministrator: false,
       isPractitioner: true
     }    
@@ -88,41 +92,37 @@ const seedPatients = async () => {
       title: 'Mr.',
       first_name: 'John',
       last_name: 'Doe',
-      preferred_name: 'Johnny',
+      gender: 'male',
       dob: new Date('1980-01-01'),
       email: 'john.doe@example.com',
       phone: '1234567890',
-      note: 'Allergic to penicillin'
     },
     {
       title: 'Ms.',
       first_name: 'Jane',
       last_name: 'Smith',
-      preferred_name: 'Janey',
+      gender: 'female',
       dob: new Date('1990-03-05'),
       email: 'jane.smith@example.com',
-      phone: '0987654321',
-      note: 'Vegan'
+      phone: '0987654321'
     },
     {
       title: 'Dr.',
       first_name: 'Robert',
       last_name: 'Brown',
-      preferred_name: 'Rob',
+      gender: 'male',
       dob: new Date('1970-07-23'),
       email: 'robert.brown@example.com',
-      phone: '1122334455',
-      note: 'Diabetic'
+      phone: '1122334455'
     },
     {
       title: 'Mr.',
       first_name: 'David',
       last_name: 'Johnson',
-      preferred_name: 'Dave',
+      gender: 'male',
       dob: new Date('1985-11-15'),
       email: 'david.johnson@example.com',
       phone: '5566778899',
-      note: 'Lactose intolerant'
     }    
     // Add more patient objects here...
   ];
