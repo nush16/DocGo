@@ -15,13 +15,12 @@ import UpdateIcon from "@mui/icons-material/Update";
 import axios from '../../axiosConfig';
 
 
-function formatDate(dob) {
+function formatDateToISO(dob) {
   const date = new Date(dob);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
   const year = date.getFullYear();
-
-  return day + "/" + month + "/" + year;
+  const month = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 const DataTable = () => {
@@ -51,7 +50,7 @@ const DataTable = () => {
       field: "dob",
       headerName: "Birth Date",
       width: 100,
-      valueGetter: (params) => formatDate(params.value),
+      valueGetter: (params) => formatDateToISO(params.value),
     },
     { field: "email", headerName: "Email", width: 200 },
     { field: "phone", headerName: "Phone", width: 150 },
@@ -63,7 +62,11 @@ const DataTable = () => {
       disableClickEventBubbling: true,
       renderCell: (params) => {
         const onClick = () => {
-          setDialogData({ ...params.row });
+          setDialogData({ 
+            ...params.row,
+            dob: formatDateToISO(params.row.dob)
+
+          });
           setOperation("update");
           setDialogOpen(true);
         };
@@ -109,7 +112,7 @@ const DataTable = () => {
           Authorization: `Bearer ${token}`, // Attach the JWT token as a header
         }
       });
-      if (response.data.message === 'User deleted successfully.') {
+      if (response.data.message === 'Patient deleted successfully') {
         setRows(rows.filter((row) => row.id !== idToDelete));
         setIdToDelete(null);
         setDeleteDialogOpen(false);
@@ -141,12 +144,12 @@ const DataTable = () => {
 
   // Saving Created/Updated user to database
   const handleDialogSubmit = async () => {
+    
     // Validate data before sending it
     if (!dialogData.email || !dialogData.first_name || !dialogData.last_name || !dialogData.title || !dialogData.gender || !dialogData.dob || !dialogData.phone) {
       alert("All fields must be filled!");
       return;
-    }
-  
+    } 
     // Check if email already exists in the current rows
     if (operation === "add" && rows.find(row => row.email === dialogData.email)) {
       alert("Email already exists!");
@@ -159,7 +162,7 @@ const DataTable = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        const updatedPatient = { ...response.data, id: response.data._id };
+        const updatedPatient = { ...response.data, id: response.data._id, dob: new Date(response.data.dob) };
         setRows(rows.map((row) => (row.id === updatedPatient.id ? updatedPatient : row)));
         alert("Patient details updated successfully.");
   
@@ -170,12 +173,12 @@ const DataTable = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-  
-        const newPatient = response.data.patient;
+        console.log('Server response:', response.data);
+        const newPatientId = response.data.patient._id;      
+        const newPatient = { ...response.data, id: response.data.patient._id};
         setRows([...rows, newPatient]);
-        alert("Patient added successfully.");
+        alert("Patient added successfully.");       
       }
-  
       setOperation("");
       setDialogOpen(false);
     } catch (error) {
@@ -197,25 +200,30 @@ const DataTable = () => {
 
         // Get the data from the backend
         const response = await axios.get(`${backendURL}/patients`, config);
-        
         // Map the response data to match the table's row data structure
-        const PatientData = response.data.map(patient => ({
-          id: patient._id,
-          email: patient.email,
-          title: patient.title,
-          first_name: patient.first_name,
-          last_name: patient.last_name,
-          gender: patient.gender,
-          dob: patient.dob,
-          phone: patient.phone
-        }));
+        const PatientData = response.data.map(patient => {
+          if (patient && patient._id) {
+            return {
+              id: patient._id,
+              email: patient.email,
+              title: patient.title,
+              first_name: patient.first_name,
+              last_name: patient.last_name,
+              gender: patient.gender,
+              dob: patient.dob,
+              phone: patient.phone,
+            };
+          } else {
+            console.error('Unexpected patient object:', patient);
+            return null;
+          }
+        }).filter(Boolean); // Filter out null values
 
         setRows(PatientData);
       } catch (error) {
         console.error('Error fetching users:', error);
       }
     };
-
     fetchPatients(); // Call the function
   }, [token]);  // Depend on the token  
 

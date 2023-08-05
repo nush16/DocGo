@@ -144,7 +144,8 @@ const DataTable = () => {
     if (!dialogData.email || !dialogData.first_name || !dialogData.last_name || !dialogData.title) {
       alert("All fields must be filled!");
       return;
-    } 
+    }
+  
     // Check if email already exists in the current rows
     if (operation === "add" && rows.find(row => row.email === dialogData.email)) {
       alert("Email already exists!");
@@ -157,6 +158,7 @@ const DataTable = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+
         const updatedUser = { ...response.data, id: response.data._id };
         setRows(rows.map((row) => (row.id === updatedUser.id ? updatedUser : row)));
         alert("User details updated successfully.");
@@ -169,10 +171,11 @@ const DataTable = () => {
           },
         });
   
-        const newUser = { ...response.data, id: response.data.user._id };
+        const newUser = response.data.user;
         setRows([...rows, newUser]);
         alert("User added successfully.");
       }
+  
       setOperation("");
       setDialogOpen(false);
     } catch (error) {
@@ -205,7 +208,6 @@ const DataTable = () => {
           isAdministrator: user.isAdministrator,
           isPractitioner: user.isPractitioner
         }));
-
         setRows(userData);
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -221,6 +223,7 @@ const DataTable = () => {
       <DataGrid
         rows={rows}
         columns={columns}
+        getRowId={(row) => row._id}
         selectionModel={selectionModel}
         onSelectionModelChange={(newSelection) => {
           setSelectionModel(newSelection);
@@ -233,7 +236,7 @@ const DataTable = () => {
           style={{ marginRight: 10 }}
           onClick={openAddDialog}
         >
-          Add STAFF
+          Add Staff
         </Button>
       </div>
 
