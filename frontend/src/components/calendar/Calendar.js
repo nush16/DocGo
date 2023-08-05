@@ -400,7 +400,9 @@ const AppointmentCalendar = () => {
                 variant="contained"
                 color="error"
                 sx={{ mr: 2 }}
-                onClick={() => deleteAppointmentFromServer(appointmentId)}
+                onClick={() =>
+                  deleteAppointmentFromServer(editedAppointment.id)
+                }
               >
                 Delete
               </Button>
