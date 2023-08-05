@@ -187,24 +187,13 @@ const DataTable = () => {
     setDialogOpen(false);
   };
 
-  const handleDialogSubmit = () => {
-    if (operation === "update") {
-      setRows(rows.map((row) => (row.id === dialogData.id ? dialogData : row)));
-    } else {
-      const id = rows.length ? rows[rows.length - 1].id + 1 : 1;
-      setRows([...rows, { id, ...dialogData }]);
-    }
-    setOperation("");
-    setDialogOpen(false);
-  };
-
-
-  const savePatient = async () => {
+  const handleDialogSubmit = async () => {
     try {
       if (operation === "update") {
-        // update logic here...
+        // Your update logic should go here, similar to the one in saveUser function
       } else {
-        const response = await axios.post("${backendURL}/users", dialogData, {
+        // add operation
+        const response = await axios.post(`${backendURL}/users`, dialogData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -217,7 +206,29 @@ const DataTable = () => {
     } catch (error) {
       console.error("Error saving user:", error);
     }
-};
+  };  
+
+
+  const saveUser = async () => {
+    try {
+      if (operation === "update") {
+        // update logic here...
+      } else {
+        const response = await axios.post(`${backendURL}/users`, dialogData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const newUser = { ...response.data.user, id: response.data.user._id };
+        setRows([...rows, newUser]);
+      }
+      setOperation("");
+      setDialogOpen(false);
+    } catch (error) {
+      console.error("Error saving user:", error);
+    }
+  };
+  
 
 
 
