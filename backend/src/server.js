@@ -1,5 +1,6 @@
 // Load environment variables from .env file
 require('dotenv').config();
+console.log(process.env);
 
 // Import the Express package and create the app instance
 const express = require('express');
@@ -42,27 +43,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-// Function to connect to the database
-async function databaseConnector(databaseURL) {
-  // Wait for the Mongoose library to connect to the specified databaseURL
-  await mongoose.connect(databaseURL);
-}
+async function databaseConnector() {
+  const databaseURL = process.env.DATABASE_URL;
+  console.log('Database URL:', databaseURL); // Add this line for debugging
 
-// Function to disconnect from the database
-async function databaseDisconnector() {
-  // Wait for the Mongoose library to close the database connection
-  await mongoose.connection.close();
-}
-
-// Connect to database using database URL from .env
-databaseConnector('mongodb://127.0.0.1:27017/docgo_db_test')
-  .then(() => {
-    console.log('Database connected successfully!');
-  })
-  .catch((error) => {
+  try {
+    await mongoose.connect(databaseURL);
+    console.log('Connected to the database successfully!'); // Add this line for debugging
+  } catch (error) {
     console.error('Error occurred connecting to the database:', error);
-  });
+  }
+}
 
+databaseConnector();
 
 // Route to check the health of the database connection
 app.get('/databaseHealth', (request, response) => {
