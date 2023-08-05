@@ -4,30 +4,31 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import { Button, Modal as MuiModal, TextField, MenuItem } from "@mui/material";
 import { Box } from "@mui/system";
+import axios from "axios";
 
 const localizer = momentLocalizer(moment);
 
-const initialAppointments = [
-  {
-    id: 1,
-    title: "Routine checkup",
-    start: new Date(2023, 7, 2, 10, 0),
-    end: new Date(2023, 7, 2, 12, 0),
-    patient: "John Doe",
-    doctor: "Dr. Smith",
-    notes: "Routine checkup",
-  },
-  {
-    id: 2,
-    title: "Routine checkup",
-    start: new Date(2023, 7, 3, 14, 0),
-    end: new Date(2023, 7, 3, 16, 0),
-    patient: "Jane Smith",
-    doctor: "Dr. Johnson",
-    notes: "Follow-up appointment",
-  },
-  // Add more appointments as needed
-];
+// const initialAppointments = [
+//   {
+//     id: 1,
+//     title: "Routine checkup",
+//     start: new Date(2023, 7, 2, 10, 0),
+//     end: new Date(2023, 7, 2, 12, 0),
+//     patient: "John Doe",
+//     doctor: "Dr. Smith",
+//     notes: "Routine checkup",
+//   },
+//   {
+//     id: 2,
+//     title: "Routine checkup",
+//     start: new Date(2023, 7, 3, 14, 0),
+//     end: new Date(2023, 7, 3, 16, 0),
+//     patient: "Jane Smith",
+//     doctor: "Dr. Johnson",
+//     notes: "Follow-up appointment",
+//   },
+//   // Add more appointments as needed
+// ];
 
 const AppointmentEvent = ({ event }) => (
   <span>
@@ -44,7 +45,7 @@ const formatEventTitle = (event) => {
 const AppointmentCalendar = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [editedAppointment, setEditedAppointment] = useState(null);
-  const [appointments, setAppointments] = useState(initialAppointments);
+  const [appointments, setAppointments] = useState([]);
   const [calendarKey, setCalendarKey] = useState(0);
   const [errorMessage, setErrorMessage] = useState(null);
   const [showOverlapError, setShowOverlapError] = useState(false);
@@ -56,6 +57,19 @@ const AppointmentCalendar = () => {
     setSelectedAppointment(event);
     setEditedAppointment({ ...event });
   };
+
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.get("/your-backend-endpoint"); // Replace with your actual endpoint URL
+      setAppointments(response.data.appointments);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
 
   const handleCloseModal = () => {
     setSelectedAppointment(null);
@@ -113,24 +127,44 @@ const AppointmentCalendar = () => {
       setShowOverlapError(true);
       return;
     }
-    if (editedAppointment && editedAppointment.id) {
-      setAppointments((prevAppointments) => {
-        const updatedAppointments = prevAppointments.map((appointment) =>
-          appointment.id === editedAppointment.id
-            ? editedAppointment
-            : appointment
-        );
-        return updatedAppointments;
-      });
-    } else {
-      // This is a new appointment, so add it to the list with the appointment type
-      setAppointments((prevAppointments) => [
-        ...prevAppointments,
-        { ...editedAppointment, id: Date.now(), type: appointmentType }, // Include the appointment type
-      ]);
-    }
 
-    setShowOverlapError(false); // Reset overlap error state when appointment is successfully added/updated
+    // Backend call
+    fetch("/api/appointments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // add any other necessary headers, like authentication tokens
+      },
+      body: JSON.stringify(editedAppointment),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          if (editedAppointment && editedAppointment.id) {
+            setAppointments((prevAppointments) => {
+              const updatedAppointments = prevAppointments.map((appointment) =>
+                appointment.id === editedAppointment.id
+                  ? editedAppointment
+                  : appointment
+              );
+              return updatedAppointments;
+            });
+          } else {
+            // If it's a new appointment, add it to the appointments list
+            setAppointments((prevAppointments) => [
+              ...prevAppointments,
+              { ...data.appointment },
+            ]);
+          }
+        } else {
+          setError(data.message || "Error saving the appointment.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setError("Error saving the appointment.");
+      });
+
     handleCloseModal();
     setAddAppointmentModalOpen(false);
   };
@@ -165,6 +199,32 @@ const AppointmentCalendar = () => {
     setAppointmentType(""); // Set the appointment type to an empty string
     setAddAppointmentModalOpen(true);
   };
+
+  function deleteAppointmentFromServer(appointmentId) {
+    fetch(`/api/appointments/${appointmentId}`, {
+      method: "DELETE",
+      headers: {
+        // Any necessary headers, like authentication tokens
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          // Remove the appointment from the local state/appointments array
+          setAppointments((prevAppointments) =>
+            prevAppointments.filter(
+              (appointment) => appointment.id !== appointmentId
+            )
+          );
+        } else {
+          setError(data.message || "Error deleting the appointment.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setError("Error deleting the appointment.");
+      });
+  }
 
   return (
     <div>
@@ -337,13 +397,14 @@ const AppointmentCalendar = () => {
               </Button>
               {/* Delete Button */}
               <Button
-                onClick={handleDelete}
                 variant="contained"
                 color="error"
                 sx={{ mr: 2 }}
+                onClick={() => deleteAppointmentFromServer(appointmentId)}
               >
-                Delete Appointment
+                Delete
               </Button>
+
               <Button onClick={handleSubmit} variant="contained" sx={{ mr: 2 }}>
                 Save Changes
               </Button>
