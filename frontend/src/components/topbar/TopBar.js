@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import { styled } from "@mui/system";
 import IconButton from "@mui/material/IconButton";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+
 import MenuIcon from "@mui/icons-material/Menu";
 import { Hidden } from "@mui/material";
 import Logo from "../../assets/logo-doc.svg";
@@ -77,7 +77,6 @@ const TopBar = ({
           <IconButton color="inherit">
             {" "}
             {/* Set color to "inherit" */}
-            <NotificationsNoneIcon />
           </IconButton>
         )}
         {buttonLabel && (
