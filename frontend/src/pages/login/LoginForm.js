@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AuthContext } from '../../AuthContext';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
 import { styled } from "@mui/system";
 import { Link } from "react-router-dom";
-import { blue } from "@mui/material/colors";
+import axios from 'axios';
+
+const backendURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BACKEND_URL_DEV : process.env.REACT_APP_BACKEND_URL_PROD;
 
 const LoginFormContainer = styled(Box)({
   display: "flex",
@@ -17,9 +19,9 @@ const LoginFormContainer = styled(Box)({
   height: 400,
   padding: 24,
   boxSizing: "border-box",
-  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // add box shadow here
-  borderRadius: "4px", // optional, if you want rounded corners
-  backgroundColor: "#ffffff", // optional, if you want a specific background color
+  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", 
+  borderRadius: "4px", 
+  backgroundColor: "#ffffff",
 });
 
 const StyledTextField = styled(TextField)({
@@ -27,11 +29,46 @@ const StyledTextField = styled(TextField)({
 });
 
 const LoginForm = () => {
+  // Retrieve the setToken function from the AuthContext
+  const { setToken } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic
+
+    // Check if fields are empty
+    if (email === "" || password === "") {
+      setLoginError("Please fill out all fields.");
+      return;
+    }
+
+    axios.post(`${backendURL}/login`, { email, password })
+      .then(response => {
+        console.log(response.data);
+        // Update to match your server response
+        if (response.status === 200) {
+          const token = response.data.token;
+          const userId = response.data.userId;
+          localStorage.setItem('token', token);
+          localStorage.setItem('userId', userId);
+          setToken(token);
+          window.location.href = '/appointments';
+        } else if (response.status === 400) {
+          setLoginError("This email and/or password is not correct.");
+        } else {
+          setLoginError("An error occurred. Please try again.");
+        }
+      })
+      .catch(error => {
+        console.log('Error during login:', error);
+        if (error.response && error.response.status === 400) {
+          setLoginError("This email and/or password is not correct.");
+        } else {
+          setLoginError("An error occurr. Please try again.");
+        }
+      });
   };
 
   return (
@@ -39,6 +76,7 @@ const LoginForm = () => {
       <Typography variant="h4" gutterBottom>
         Welcome
       </Typography>
+      {loginError && <Typography color="error">{loginError}</Typography>}
       <form onSubmit={handleSubmit}>
         <StyledTextField
           fullWidth
@@ -58,7 +96,6 @@ const LoginForm = () => {
           required
         />
         <Button
-          href="/appointments"
           variant="contained"
           type="submit"
           style={{ marginTop: "20px" }}
