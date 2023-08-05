@@ -41,8 +41,19 @@ app.use(express.urlencoded({ extended: true }));
 // Import and configure Mongoose for MongoDB
 const mongoose = require('mongoose');
 
+// Function to connect to the database
+async function databaseConnector(databaseURL) {
+  // Wait for the Mongoose library to connect to the specified databaseURL
+  await mongoose.connect(databaseURL);
+}
+
+// Function to disconnect from the database
+async function databaseDisconnector() {
+  // Wait for the Mongoose library to close the database connection
+  await mongoose.connection.close();
+}
+
 // Connect to database using database URL from .env
-const { databaseConnector } = require('./database');
 databaseConnector('mongodb://127.0.0.1:27017/docgo_db_test')
   .then(() => {
     console.log('Database connected successfully!');
@@ -50,6 +61,7 @@ databaseConnector('mongodb://127.0.0.1:27017/docgo_db_test')
   .catch((error) => {
     console.error('Error occurred connecting to the database:', error);
   });
+
 
 // Route to check the health of the database connection
 app.get('/databaseHealth', (request, response) => {
