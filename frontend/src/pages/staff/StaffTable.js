@@ -190,7 +190,13 @@ const DataTable = () => {
   const handleDialogSubmit = async () => {
     try {
       if (operation === "update") {
-        // Your update logic should go here, similar to the one in saveUser function
+        const response = await axios.put(`${backendURL}/users/${dialogData.id}`, dialogData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const updatedUser = { ...response.data, id: response.data._id };
+        setRows(rows.map((row) => (row.id === updatedUser.id ? updatedUser : row)));
       } else {
         // add operation
         const response = await axios.post(`${backendURL}/users`, dialogData, {
@@ -198,7 +204,7 @@ const DataTable = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        const newUser = response.data.user;
+        const newUser = { ...response.data.user, id: response.data.user._id };  // Here's the updated line
         setRows([...rows, newUser]);
       }
       setOperation("");
@@ -207,7 +213,6 @@ const DataTable = () => {
       console.error("Error saving user:", error);
     }
   };  
-
 
   const saveUser = async () => {
     try {
