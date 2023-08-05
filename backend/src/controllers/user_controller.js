@@ -87,31 +87,38 @@ const getAllUsers = async (req, res) => {
 
 // Controller function for editing user details
 const editUser = async (req, res) => {
-    try {
-      const { email, first_name, last_name, title, isAdministrator, isPractitioner } = req.body;
-      const userId = req.params.id;
-  
-      // Check if the provided ID is valid
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ error: 'Invalid user ID.' });
-      }
-  
-      const updatedUser = await User.findByIdAndUpdate(
-        userId,
-        { email, first_name, last_name, title, isAdministrator, isPractitioner },
-        { new: true }
-      );
-  
-      if (!updatedUser) {
-        return res.status(404).json({ error: 'User not found.' });
-      }
-  
-      res.status(200).json(updatedUser);
-    } catch (error) {
-      console.error('Error editing user:', error);
-      res.status(500).json({ error: 'Error editing user.' });
+  try {
+    const { email, first_name, last_name, title, isAdministrator, isPractitioner } = req.body;
+    const userId = req.params.id;
+
+    // Check if the provided ID is valid
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID.' });
     }
-  };
+
+    // Check if the email is already in use by another user
+    const existingUser = await User.findOne({ email });
+    if (existingUser && existingUser._id != userId) {
+      return res.status(400).json({ error: 'Email already in use.' });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { email, first_name, last_name, title, isAdministrator, isPractitioner },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error('Error editing user:', error);
+    res.status(500).json({ error: 'Error editing user.' });
+  }
+};
+
   
 // Controller function for changing password
 const changePassword = async (req, res) => {

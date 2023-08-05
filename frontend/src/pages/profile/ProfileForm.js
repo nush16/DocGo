@@ -10,7 +10,6 @@ const backendURL = process.env.NODE_ENV === 'development' ? process.env.REACT_AP
 
 const ProfileForm = () => {
   const { token, userId } = useContext(AuthContext);
-  console.log(userId);
   const [openAlert, setOpenAlert] = useState(true);
   const [imgSrc, setImgSrc] = useState("/images/avatars/1.png");
   const [user, setUser] = useState({});  // This holds the user data
@@ -51,7 +50,13 @@ const ProfileForm = () => {
     // Function to handle user details update
     const handleUserDetailsUpdate = (e) => {
       e.preventDefault();
-  
+
+      // Check if any field is empty
+      const { title, first_name, last_name, email } = user;
+      if (!title || !first_name || !last_name || !email) {
+        alert("Please fill all the fields.");
+        return;
+      }
       axios.put(`${backendURL}/users/${userId}`, user, {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -62,12 +67,28 @@ const ProfileForm = () => {
         })
         .catch(error => {
           console.error('Error updating user details:', error);
-          alert('Error updating user details.');
+          if (error.response && error.response.data.error === 'Email already in use.') {
+            alert('Email already in use. Please use a different email.');
+          } else {
+            alert('Error updating user details.');
+          }
         });
     };
   
     // Function to handle password change
     const handlePasswordChange = (newPassword) => {
+      // Don't proceed if newPassword is empty
+      if (!newPassword) {
+        alert("Password cannot be empty.");
+        return;
+      }
+      
+      // Validation for password length
+      if(newPassword.length < 8){
+        alert("Password must be at least 8 characters long.");
+        return;
+      }
+
       axios.put(`${backendURL}/users/${userId}/password`, { newPassword }, {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -132,23 +153,26 @@ const ProfileForm = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              halfWidth
+              fullWidth
               label="Change Password"
               placeholder="********"
               type="password" // Make sure to set the type to password
               value={newPassword}
               onChange={handleNewPasswordChange}
             />
-            <Button variant="contained" onClick={() => handlePasswordChange(newPassword)} sx={{ height: '80%', py: 1.5 }} >
+            <Button 
+              variant="contained" 
+              onClick={() => handlePasswordChange(newPassword)}
+              sx={{
+                  marginTop: 1,
+              }}
+            >
               Change Password
             </Button>
           </Grid>
           <Grid item xs={12}>
-            <Button variant="contained" sx={{ marginRight: 3.5 }}>
+            <Button variant="contained" sx={{ marginRight: 3.5 }} onClick={handleUserDetailsUpdate}>
               Save Changes
-            </Button>
-            <Button type="reset" variant="outlined" color="secondary">
-              Reset
             </Button>
           </Grid>
         </Grid>
