@@ -5,6 +5,9 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
+// Import and configure Mongoose for MongoDB
+const mongoose = require('mongoose');
+
 // Set default values for HOST and PORT from environment variables, if not specified
 const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 3001;
@@ -38,8 +41,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Import and configure Mongoose for MongoDB
-const mongoose = require('mongoose');
 
 // Function to connect to the database
 async function databaseConnector(databaseURL) {
