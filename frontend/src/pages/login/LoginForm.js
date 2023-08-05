@@ -63,7 +63,6 @@ const LoginForm = () => {
         }
       })
       .catch(error => {
-        console.log('Error during login:', error);
         if (error.response && error.response.status === 400) {
           setLoginError("This email and/or password is not correct.");
         } else {

@@ -10,7 +10,6 @@ const backendURL = process.env.NODE_ENV === 'development' ? process.env.REACT_AP
 
 const ProfileForm = () => {
   const { token, userId } = useContext(AuthContext);
-  const [openAlert, setOpenAlert] = useState(true);
   const [imgSrc, setImgSrc] = useState("/images/avatars/1.png");
   const [user, setUser] = useState({});  // This holds the user data
   const [newPassword, setNewPassword] = useState("");

@@ -89,6 +89,7 @@ const seedUsers = async () => {
 const seedPatients = async () => {
   const patients = [
     {
+      _id: '64cdaf916aef08634b7bef8e',
       title: 'Mr.',
       first_name: 'John',
       last_name: 'Doe',
@@ -98,6 +99,7 @@ const seedPatients = async () => {
       phone: '1234567890',
     },
     {
+      _id: '64cdaf916aef08634b7bef90',
       title: 'Ms.',
       first_name: 'Jane',
       last_name: 'Smith',
@@ -107,6 +109,7 @@ const seedPatients = async () => {
       phone: '0987654321'
     },
     {
+      _id: '64cdaf916aef08634b7bef94',
       title: 'Dr.',
       first_name: 'Robert',
       last_name: 'Brown',
@@ -116,6 +119,7 @@ const seedPatients = async () => {
       phone: '1122334455'
     },
     {
+      _id: '64cdaf916aef08634b7bef96',
       title: 'Mr.',
       first_name: 'David',
       last_name: 'Johnson',

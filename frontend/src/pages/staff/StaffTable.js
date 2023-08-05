@@ -18,7 +18,7 @@ import axios from '../../axiosConfig';
 
 const DataTable = () => {
   const [rows, setRows] = useState([]);
-  const { token, isAdmin } = useContext(AuthContext); 
+  const { token, isAdmin } = useContext(AuthContext);
   const [selectionModel, setSelectionModel] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -100,45 +100,6 @@ const DataTable = () => {
   ];
 
   const backendURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BACKEND_URL_DEV : process.env.REACT_APP_BACKEND_URL_PROD;
-  console.log(backendURL)
-
-  useEffect(() => {
-    // Function to fetch all users from the backend
-    const fetchUsers = async () => {
-      try {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`, // Attach the JWT token as a header
-          },
-        };
-
-        // Get the data from the backend
-        const response = await axios.get(`${backendURL}/users`, config);
-        
-        // Map the response data to match the table's row data structure
-        const userData = response.data.map(user => ({
-          id: user._id,
-          email: user.email,
-          title: user.title,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          isAdministrator: user.isAdministrator,
-          isPractitioner: user.isPractitioner
-        }));
-
-        setRows(userData);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    fetchUsers(); // Call the function
-  }, [token]);  // Depend on the token  
-
-  const onClick = (params) => {
-    setIdToDelete(params.id);
-    setDeleteDialogOpen(true);
-  };
 
   const confirmDelete = async () => {
     try {
@@ -173,21 +134,24 @@ const DataTable = () => {
     setDialogOpen(true);
 };
 
-
-  const openUpdateDialog = () => {
-    if (selectionModel.length > 0) {
-      const firstSelectedRow = rows.find((row) => row.id === selectionModel[0]);
-      setDialogData({ ...firstSelectedRow });
-      setOperation("update");
-      setDialogOpen(true);
-    }
-  };
-
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
 
+  // Saving Created/Updated user to database
   const handleDialogSubmit = async () => {
+    // Validate data before sending it
+    if (!dialogData.email || !dialogData.first_name || !dialogData.last_name || !dialogData.title) {
+      alert("All fields must be filled!");
+      return;
+    }
+  
+    // Check if email already exists in the current rows
+    if (operation === "add" && rows.find(row => row.email === dialogData.email)) {
+      alert("Email already exists!");
+      return;
+    }
+  
     try {
       if (operation === "update") {
         const response = await axios.put(`${backendURL}/users/${dialogData.id}`, dialogData, {
@@ -195,8 +159,11 @@ const DataTable = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+  
         const updatedUser = { ...response.data, id: response.data._id };
         setRows(rows.map((row) => (row.id === updatedUser.id ? updatedUser : row)));
+        alert("User details updated successfully.");
+  
       } else {
         // add operation
         const response = await axios.post(`${backendURL}/users`, dialogData, {
@@ -204,29 +171,12 @@ const DataTable = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        const newUser = { ...response.data.user, id: response.data.user._id };  // Here's the updated line
+  
+        const newUser = response.data.user;
         setRows([...rows, newUser]);
+        alert("User added successfully.");
       }
-      setOperation("");
-      setDialogOpen(false);
-    } catch (error) {
-      console.error("Error saving user:", error);
-    }
-  };  
-
-  const saveUser = async () => {
-    try {
-      if (operation === "update") {
-        // update logic here...
-      } else {
-        const response = await axios.post(`${backendURL}/users`, dialogData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const newUser = { ...response.data.user, id: response.data.user._id };
-        setRows([...rows, newUser]);
-      }
+  
       setOperation("");
       setDialogOpen(false);
     } catch (error) {
@@ -235,14 +185,46 @@ const DataTable = () => {
   };
   
 
+  // Get all users from database and show in the table
+  useEffect(() => {
+    // Function to fetch all users from the backend
+    const fetchUsers = async () => {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach the JWT token as a header
+          },
+        };
 
+        // Get the data from the backend
+        const response = await axios.get(`${backendURL}/users`, config);
+        
+        // Map the response data to match the table's row data structure
+        const userData = response.data.map(user => ({
+          id: user._id,
+          email: user.email,
+          title: user.title,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          isAdministrator: user.isAdministrator,
+          isPractitioner: user.isPractitioner
+        }));
 
+        setRows(userData);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers(); // Call the function
+  }, [token]);  // Depend on the token  
+
+  
   return (
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid
         rows={rows}
         columns={columns}
-        checkboxSelection
         selectionModel={selectionModel}
         onSelectionModelChange={(newSelection) => {
           setSelectionModel(newSelection);
@@ -265,6 +247,7 @@ const DataTable = () => {
         </DialogTitle>
         <DialogContent>
           <TextField
+            required
             margin="dense"
             label="Email"
             value={dialogData.email}
@@ -274,6 +257,7 @@ const DataTable = () => {
             fullWidth
           />
           <TextField
+            required
             margin="dense"
             label="First Name"
             value={dialogData.first_name}
@@ -283,6 +267,7 @@ const DataTable = () => {
             fullWidth
           />
           <TextField
+            required
             margin="dense"
             label="Last Name"
             value={dialogData.last_name}
@@ -292,6 +277,7 @@ const DataTable = () => {
             fullWidth
           />
           <TextField
+            required
             margin="dense"
             label="Title"
             value={dialogData.title}

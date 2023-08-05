@@ -7,7 +7,6 @@ import AppointmentPage from "./pages/appointments/AppointmentPage";
 import PatientsPage from "./pages/patients/PatientsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import StaffsPage from "./pages/staff/StaffPage";
-import AddPatient from "./pages/patients/AddPatient";
 
 function App() {
   return (
@@ -64,14 +63,6 @@ function App() {
             <>
               <TopBar currentPage="profile" />
               <ProfilePage />
-            </>
-          }
-        />
-        <Route
-          path="/add-patient"
-          element={
-            <>
-              <AddPatient />
             </>
           }
         />
