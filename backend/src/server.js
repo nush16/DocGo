@@ -6,7 +6,7 @@ const express = require('express');
 const app = express();
 
 // Set default values for HOST and PORT from environment variables, if not specified
-const HOST = process.env.HOST || '127.0.0.1';
+const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 3001;
 
 // Helmet middleware for enhancing server security
