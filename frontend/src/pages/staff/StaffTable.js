@@ -151,7 +151,6 @@ const DataTable = () => {
       alert("Email already exists!");
       return;
     }
-  
     try {
       if (operation === "update") {
         const response = await axios.put(`${backendURL}/users/${dialogData.id}`, dialogData, {
@@ -159,7 +158,7 @@ const DataTable = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+
         const updatedUser = { ...response.data, id: response.data._id };
         setRows(rows.map((row) => (row.id === updatedUser.id ? updatedUser : row)));
         alert("User details updated successfully.");

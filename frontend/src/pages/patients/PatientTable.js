@@ -1,180 +1,350 @@
-import * as React from "react";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import InputBase from "@mui/material/InputBase";
-import SearchIcon from "@mui/icons-material/Search";
-import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext} from "react";
+import { AuthContext } from '../../AuthContext';
+import { DataGrid } from "@mui/x-data-grid";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  DialogContentText,
+  TextField,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import UpdateIcon from "@mui/icons-material/Update";
+import axios from '../../axiosConfig';
 
-const columns = [
-  { id: "first_name", label: "First Name", minWidth: 170 },
-  { id: "last_name", label: "Last Name", minWidth: 100 },
-  {
-    id: "email",
-    label: "Email",
-    minWidth: 170,
-    align: "right",
-    format: (value) => value.toLocaleString("en-US"),
-  },
-  {
-    id: "phone",
-    label: "Phone",
-    minWidth: 170,
-    align: "right",
-  },
-  {
-    id: "appointment",
-    label: "Next Appointment",
-    minWidth: 170,
-    align: "right",
-    format: (value) => value.toLocaleString("en-US"),
-  },
-];
 
-function createData(first_name, last_name, email, phone, appointment) {
-  return { first_name, last_name, email, phone, appointment };
+function formatDate(dob) {
+  const date = new Date(dob);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  const year = date.getFullYear();
+
+  return day + "/" + month + "/" + year;
 }
 
-const rows = [
-  createData("John", "IN", "John.In@example.com", 3287263, "11 / 05 / 2024"),
-  createData("Sally", "CN", "Sally.Cn@example.com", 9596961, "11 / 05 / 2024"),
-  createData("Kris", "IT", "Kris.It@example.com", 301340, "11 / 05 / 2024"),
-  createData(
-    "Bianca",
-    "US",
-    "Bianca.Us@example.com",
-    9833520,
-    "11 / 05 / 2024"
-  ),
-  createData("Tom", "CA", "Tom.Ca@example.com", 9984670, "11 / 05 / 2024"),
-  createData("Timmy", "AU", "Timmy.Au@example.com", 7692024, "11 / 05 / 2024"),
-  createData("Sally", "DE", "Sally.De@example.com", 357578, "11 / 05 / 2024"),
-  createData("Nick", "IE", "Nick.Ie@example.com", 70273, "11 / 05 / 2024"),
-  createData("Gayle", "MX", "Gayle.Mx@example.com", 1972550, "11 / 05 / 2024"),
-  createData("Matt", "JP", "Matt.Jp@example.com", 377973, "11 / 05 / 2024"),
-  createData("Franco", "FR", "Franco.Fr@example.com", 640679, "11 / 05 / 2024"),
-  createData("Nat", "GB", "Nat.Gb@example.com", 242495, "11 / 05 / 2024"),
-  createData(
-    "Karina",
-    "RU",
-    "Kate.Lam@example.com",
-    17098246,
-    "11 / 05 / 2024"
-  ),
-  createData("Ian", "NG", "Kate.Lam@example.com", 923768, "11 / 05 / 2024"),
-  createData("Bob", "BR", "Kate.Lam@example.com", 8515767, "11 / 05 / 2024"),
-];
+const DataTable = () => {
+  const [rows, setRows] = useState([]);
+  const { token } = useContext(AuthContext);
+  const [selectionModel, setSelectionModel] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
+  const [operation, setOperation] = useState("");
+  const [dialogData, setDialogData] = useState({
+    title: "",
+    first_name: "",
+    last_name: "",
+    gender: "",
+    dob: "",
+    email: "",
+    phone: "",
+  });
 
-export default function PatientStickyHeadTable() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [filteredRows, setFilteredRows] = React.useState(rows);
+  const columns = [
+    { field: "title", headerName: "Title", width: 100 },
+    { field: "first_name", headerName: "First Name", width: 150 },
+    { field: "last_name", headerName: "Last Name", width: 150 },
+    { field: "gender", headerName: "Gender", width: 100 },
+    {
+      field: "dob",
+      headerName: "Birth Date",
+      width: 100,
+      valueGetter: (params) => formatDate(params.value),
+    },
+    { field: "email", headerName: "Email", width: 200 },
+    { field: "phone", headerName: "Phone", width: 150 },
+    {
+      field: "update",
+      headerName: "Update",
+      sortable: false,
+      width: 100,
+      disableClickEventBubbling: true,
+      renderCell: (params) => {
+        const onClick = () => {
+          setDialogData({ ...params.row });
+          setOperation("update");
+          setDialogOpen(true);
+        };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+        return (
+          <UpdateIcon
+            color="primary"
+            style={{ cursor: "pointer" }}
+            onClick={onClick}
+          />
+        );
+      },
+    },
+    {
+      field: "delete",
+      headerName: "Remove",
+      sortable: false,
+      width: 100,
+      disableClickEventBubbling: true,
+      renderCell: (params) => {
+        const onClick = () => {
+          setIdToDelete(params.id);
+          setDeleteDialogOpen(true);
+        };
+
+        return (
+          <DeleteIcon
+            color="error"
+            style={{ cursor: "pointer" }}
+            onClick={onClick}
+          />
+        );
+      },
+    },
+  ];
+
+  const backendURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BACKEND_URL_DEV : process.env.REACT_APP_BACKEND_URL_PROD;
+
+  const confirmDelete = async () => {
+    try {
+      const response = await axios.delete(`${backendURL}/patients/${idToDelete}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach the JWT token as a header
+        }
+      });
+      if (response.data.message === 'User deleted successfully.') {
+        setRows(rows.filter((row) => row.id !== idToDelete));
+        setIdToDelete(null);
+        setDeleteDialogOpen(false);
+      } else {
+        console.error('Failed to delete user: ', response.data.error);
+      }
+    } catch (error) {
+      console.error('Failed to delete user: ', error);
+    }
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  const openAddDialog = () => {
+    setDialogData({
+      title: "",
+      first_name: "",
+      last_name: "",
+      gender: "",
+      dob: "",
+      email: "",
+      phone: "",
+    });
+    setOperation("add");
+    setDialogOpen(true);
   };
 
-  const handleSearchInputChange = (event) => {
-    const value = event.target.value;
-    setSearchQuery(value);
-
-    // Filter the rows based on the search query
-    const filteredRows = rows.filter(
-      (row) =>
-        row.first_name.toLowerCase().includes(value.toLowerCase()) ||
-        row.last_name.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredRows(filteredRows);
-    setPage(0);
+  const handleDialogClose = () => {
+    setDialogOpen(false);
   };
 
-  const navigate = useNavigate();
-
-  const handleAddPatient = () => {
-    console.log("Add Patient clicked!");
-
-    navigate("/add-patient");
+  // Saving Created/Updated user to database
+  const handleDialogSubmit = async () => {
+    // Validate data before sending it
+    if (!dialogData.email || !dialogData.first_name || !dialogData.last_name || !dialogData.title || !dialogData.gender || !dialogData.dob || !dialogData.phone) {
+      alert("All fields must be filled!");
+      return;
+    }
+  
+    // Check if email already exists in the current rows
+    if (operation === "add" && rows.find(row => row.email === dialogData.email)) {
+      alert("Email already exists!");
+      return;
+    }
+    try {
+      if (operation === "update") {
+        const response = await axios.put(`${backendURL}/patients/${dialogData.id}`, dialogData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const updatedPatient = { ...response.data, id: response.data._id };
+        setRows(rows.map((row) => (row.id === updatedPatient.id ? updatedPatient : row)));
+        alert("Patient details updated successfully.");
+  
+      } else {
+        // add operation
+        const response = await axios.post(`${backendURL}/patients`, dialogData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        const newPatient = response.data.patient;
+        setRows([...rows, newPatient]);
+        alert("Patient added successfully.");
+      }
+  
+      setOperation("");
+      setDialogOpen(false);
+    } catch (error) {
+      console.error("Error saving user:", error);
+    }
   };
+
+
+  // Get all patients from database and show in the table
+  useEffect(() => {
+    // Function to fetch all users from the backend
+    const fetchPatients = async () => {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach the JWT token as a header
+          },
+        };
+
+        // Get the data from the backend
+        const response = await axios.get(`${backendURL}/patients`, config);
+        
+        // Map the response data to match the table's row data structure
+        const PatientData = response.data.map(patient => ({
+          id: patient._id,
+          email: patient.email,
+          title: patient.title,
+          first_name: patient.first_name,
+          last_name: patient.last_name,
+          gender: patient.gender,
+          dob: patient.dob,
+          phone: patient.phone
+        }));
+
+        setRows(PatientData);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchPatients(); // Call the function
+  }, [token]);  // Depend on the token  
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      {/* Search Bar */}
-      <div style={{ display: "flex", alignItems: "center", padding: "10px" }}>
-        <SearchIcon style={{ marginRight: "8px" }} />
-        <InputBase
-          placeholder="Search by Name..."
-          value={searchQuery}
-          onChange={handleSearchInputChange}
-          style={{ flex: 1 }}
-        />
-      </div>
-
-      {/* Table */}
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredRows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={filteredRows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+    <div style={{ height: 400, width: "100%" }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        selectionModel={selectionModel}
+        onSelectionModelChange={(newSelection) => {
+          setSelectionModel(newSelection);
+        }}
       />
-      <div
-        style={{ display: "flex", justifyContent: "center", padding: "10px" }}
-      >
-        <Button variant="contained" color="primary" onClick={handleAddPatient}>
+      <div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginRight: 10 }}
+          onClick={openAddDialog}
+        >
           Add Patient
         </Button>
       </div>
-    </Paper>
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>
+          {operation.charAt(0).toUpperCase() + operation.slice(1)} Patient
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Title"
+            value={dialogData.title}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, title: e.target.value })
+            }
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="First Name"
+            value={dialogData.first_name}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, first_name: e.target.value })
+            }
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Last Name"
+            value={dialogData.last_name}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, last_name: e.target.value })
+            }
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Gender"
+            value={dialogData.gender}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, gender: e.target.value })
+            }
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="DOB"
+            type="date"
+            value={dialogData.dob}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, dob: e.target.value })
+            }
+            InputLabelProps={{
+              shrink: true,
+            }}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Email"
+            value={dialogData.email}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, email: e.target.value })
+            }
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Phone"
+            value={dialogData.phone}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, phone: e.target.value })
+            }
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDialogSubmit} color="primary">
+            {dialogData.id ? "Update" : "Add"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Delete Confirmation"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete this row?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+            No
+          </Button>
+          <Button onClick={confirmDelete} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
-}
+};
+
+export default DataTable;
