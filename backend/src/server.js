@@ -43,7 +43,7 @@ const mongoose = require('mongoose');
 
 // Connect to database using database URL from .env
 const { databaseConnector } = require('./database');
-databaseConnector(process.env.DATABASE_URL)
+databaseConnector('mongodb://127.0.0.1:27017/docgo_db_test')
   .then(() => {
     console.log('Database connected successfully!');
   })
