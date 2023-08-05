@@ -1,182 +1,286 @@
-import * as React from "react";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import InputBase from "@mui/material/InputBase";
-import SearchIcon from "@mui/icons-material/Search";
-import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  DialogContentText,
+  TextField,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import UpdateIcon from "@mui/icons-material/Update";
+import axios from "axios"; // Add axios library
 
-const columns = [
-  { id: "first_name", label: "First Name", minWidth: 170 },
-  { id: "last_name", label: "Last Name", minWidth: 100 },
+const initialData = [
   {
-    id: "email",
-    label: "Email",
-    minWidth: 170,
-    align: "right",
-    format: (value) => value.toLocaleString("en-US"),
-  },
-  {
-    id: "phone",
-    label: "Phone",
-    minWidth: 170,
-    align: "right",
-  },
-  {
-    id: "appointment",
-    label: "Next Appointment",
-    minWidth: 170,
-    align: "right",
-    format: (value) => value.toLocaleString("en-US"),
+    id: 1,
+    firstName: "John",
+    lastName: "Doe",
+    email: "john@example.com",
+    phone: "1234567890",
   },
 ];
 
-function createData(first_name, last_name, email, phone, appointment) {
-  return { first_name, last_name, email, phone, appointment };
+function formatDate(dob) {
+  const date = new Date(dob);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  const year = date.getFullYear();
+
+  return day + "/" + month + "/" + year;
 }
 
-const rows = [
-  createData(
-    "Tom",
-    "Brady",
-    "Tom.Brady@example.com",
-    3287263,
-    "11 / 05 / 2024"
-  ),
-  createData(
-    "Sally",
-    "Yus",
-    "Sally.Yus@example.comm",
-    9596961,
-    "11 / 05 / 2024"
-  ),
-  createData("Kate", "Lam", "Kate.Lam@example.com", 301340, "11 / 05 / 2024"),
-  createData(
-    "Rajesh",
-    "Abeyan",
-    "Rajesh.Abeyan@example.com",
-    9984670,
-    "11 / 05 / 2024"
-  ),
-  createData(
-    "Laura",
-    "Simmons",
-    "Laura.Simmons@example.com",
-    7692024,
-    "11 / 05 / 2024"
-  ),
-];
+const DataTable = () => {
+  const [rows, setRows] = useState(initialData);
+  const [selectionModel, setSelectionModel] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
+  const [operation, setOperation] = useState("");
+  const [dialogData, setDialogData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
 
-export default function StaffStickyHeadTable() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [filteredRows, setFilteredRows] = React.useState(rows);
+  const columns = [
+    { field: "id", hide: true, width: 50 },
+    { field: "firstName", headerName: "First Name", width: 250 },
+    { field: "lastName", headerName: "Last Name", width: 250 },
+    { field: "email", headerName: "Email", width: 200 },
+    { field: "phone", headerName: "Phone", width: 250 },
+    {
+      field: "update",
+      headerName: "Update",
+      sortable: false,
+      width: 100,
+      disableClickEventBubbling: true,
+      renderCell: (params) => {
+        const onClick = () => {
+          setDialogData({ ...params.row });
+          setOperation("update");
+          setDialogOpen(true);
+        };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+        return (
+          <UpdateIcon
+            color="primary"
+            style={{ cursor: "pointer" }}
+            onClick={onClick}
+          />
+        );
+      },
+    },
+    {
+      field: "delete",
+      headerName: "Remove",
+      sortable: false,
+      width: 100,
+      disableClickEventBubbling: true,
+      renderCell: (params) => {
+        const onClick = () => {
+          setIdToDelete(params.id);
+          setDeleteDialogOpen(true);
+        };
+
+        return (
+          <DeleteIcon
+            color="error"
+            style={{ cursor: "pointer" }}
+            onClick={onClick}
+          />
+        );
+      },
+    },
+  ];
+
+  const onClick = (params) => {
+    setIdToDelete(params.id);
+    setDeleteDialogOpen(true);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  const confirmDelete = () => {
+    setRows(rows.filter((row) => row.id !== idToDelete));
+    setIdToDelete(null);
+    setDeleteDialogOpen(false);
   };
 
-  const handleSearchInputChange = (event) => {
-    const value = event.target.value;
-    setSearchQuery(value);
-
-    // Filter the rows based on the search query
-    const filteredRows = rows.filter(
-      (row) =>
-        row.first_name.toLowerCase().includes(value.toLowerCase()) ||
-        row.last_name.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredRows(filteredRows);
-    setPage(0);
+  const openAddDialog = () => {
+    setDialogData({
+      title: "",
+      firstName: "",
+      lastName: "",
+      gender: "",
+      dob: "",
+      email: "",
+      phone: "",
+    });
+    setOperation("add");
+    setDialogOpen(true);
   };
 
-  const navigate = useNavigate();
+  const openUpdateDialog = () => {
+    if (selectionModel.length > 0) {
+      const firstSelectedRow = rows.find((row) => row.id === selectionModel[0]);
+      setDialogData({ ...firstSelectedRow });
+      setOperation("update");
+      setDialogOpen(true);
+    }
+  };
 
-  const handleAddPatient = () => {
-    console.log("Add Patient clicked!");
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
 
-    navigate("/add-staff");
+  const handleDialogSubmit = () => {
+    if (operation === "update") {
+      setRows(rows.map((row) => (row.id === dialogData.id ? dialogData : row)));
+    } else {
+      const id = rows.length ? rows[rows.length - 1].id + 1 : 1;
+      setRows([...rows, { id, ...dialogData }]);
+    }
+    setOperation("");
+    setDialogOpen(false);
+  };
+
+  //   const deleteData = () => {
+  //     setRows(rows.filter((row) => !selectionModel.includes(row.id)));
+  //   };
+
+  // Function to create/update a patient using API
+  const savePatient = async () => {
+    try {
+      if (operation === "update") {
+        await axios.put(`/api/users/${dialogData.id}`, dialogData);
+        setRows(
+          rows.map((row) => (row.id === dialogData.id ? dialogData : row))
+        );
+      } else {
+        const response = await axios.post("/api/users", dialogData);
+        const newPatient = response.data;
+        setRows([...rows, newPatient]);
+      }
+      setOperation("");
+      setDialogOpen(false);
+    } catch (error) {
+      console.error("Error saving staff:", error);
+    }
+  };
+
+  // Function to delete patient(s) using API
+  const deleteData = async () => {
+    try {
+      const response = await axios.delete("/api/users", {
+        data: { ids: selectionModel }, // Assuming you want to delete multiple patients at once
+      });
+      if (response.data.success) {
+        setRows(rows.filter((row) => !selectionModel.includes(row.id)));
+        setSelectionModel([]);
+      }
+    } catch (error) {
+      console.error("Error deleting staff(s):", error);
+    }
   };
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      {/* Search Bar */}
-      <div style={{ display: "flex", alignItems: "center", padding: "10px" }}>
-        <SearchIcon style={{ marginRight: "8px" }} />
-        <InputBase
-          placeholder="Search by Name..."
-          value={searchQuery}
-          onChange={handleSearchInputChange}
-          style={{ flex: 1 }}
-        />
-      </div>
-
-      {/* Table */}
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredRows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={filteredRows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+    <div style={{ height: 400, width: "100%" }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        checkboxSelection
+        selectionModel={selectionModel}
+        onSelectionModelChange={(newSelection) => {
+          setSelectionModel(newSelection);
+        }}
       />
-      <div
-        style={{ display: "flex", justifyContent: "center", padding: "10px" }}
-      >
-        <Button variant="contained" color="primary" onClick={handleAddPatient}>
-          Add Staff
+      <div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginRight: 10 }}
+          onClick={openAddDialog}
+        >
+          Add Patient
         </Button>
       </div>
-    </Paper>
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>
+          {operation.charAt(0).toUpperCase() + operation.slice(1)} Staff
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="First Name"
+            value={dialogData.firstName}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, firstName: e.target.value })
+            }
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Last Name"
+            value={dialogData.lastName}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, lastName: e.target.value })
+            }
+            fullWidth
+          />
+
+          <TextField
+            margin="dense"
+            label="Email"
+            value={dialogData.email}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, email: e.target.value })
+            }
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Phone"
+            value={dialogData.phone}
+            onChange={(e) =>
+              setDialogData({ ...dialogData, phone: e.target.value })
+            }
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDialogSubmit} color="primary">
+            {dialogData.id ? "Update" : "Add"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Delete Confirmation"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete this row?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+            No
+          </Button>
+          <Button onClick={confirmDelete} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
-}
+};
+
+export default DataTable;

@@ -25,7 +25,11 @@ app.use(
 // CORS middleware for handling cross-origin requests
 const cors = require('cors');
 const corsOptions = {
-  origin: ['http://localhost:3000'], // Allow requests from this origin
+  origin: [
+    'http://localhost:3000', // Allow requests from local frontend
+    'https://docgo2.netlify.app', // Allow requests from deployed frontend
+    'http://35.201.24.206:3001' // Allow requests from your backend
+  ],
   optionsSuccessStatus: 200, // Set the HTTP status code for successful CORS preflight requests
 };
 app.use(cors(corsOptions));
