@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AuthContext } from '../../AuthContext';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -28,6 +29,8 @@ const StyledTextField = styled(TextField)({
 });
 
 const LoginForm = () => {
+  // Retrieve the setToken function from the AuthContext
+  const { setToken } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -41,10 +44,16 @@ const LoginForm = () => {
       return;
     }
 
-    axios.post(`http://127.0.0.1:3001/login`, { email, password })
+    axios.post(`${backendURL}/login`, { email, password })
       .then(response => {
+        console.log(response.data);
         // Update to match your server response
         if (response.status === 200) {
+          const token = response.data.token;
+          const userId = response.data.userId;
+          localStorage.setItem('token', token);
+          localStorage.setItem('userId', userId);
+          setToken(token);
           window.location.href = '/appointments';
         } else if (response.status === 400) {
           setLoginError("This email and/or password is not correct.");
@@ -53,10 +62,11 @@ const LoginForm = () => {
         }
       })
       .catch(error => {
+        console.log('Error during login:', error);
         if (error.response && error.response.status === 400) {
           setLoginError("This email and/or password is not correct.");
         } else {
-          setLoginError("An error occurred. Please try again.");
+          setLoginError("An error occurr. Please try again.");
         }
       });
   };

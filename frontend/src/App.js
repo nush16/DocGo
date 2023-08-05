@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TopBar from "./components/topbar/TopBar";
 import HomePage from "./pages/homepage/HomePage";
-import SignUpPage from "./pages/signup/SignUpPage";
 import ForgotPasswordPage from "./pages/forgotpassword/ForgotPasswordPage";
 import AppointmentPage from "./pages/appointments/AppointmentPage";
 import PatientsPage from "./pages/patients/PatientsPage";
@@ -21,15 +20,6 @@ function App() {
             <>
               <TopBar currentPage="signin" />
               <HomePage />
-            </>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <>
-              <TopBar currentPage="signup" />
-              <SignUpPage />
             </>
           }
         />

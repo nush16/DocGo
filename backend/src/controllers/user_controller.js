@@ -115,39 +115,34 @@ const editUser = async (req, res) => {
   
 // Controller function for changing password
 const changePassword = async (req, res) => {
-    if ( req.user.id !== req.params.id) {
-        return res.status(403).json({ error: 'Unauthorized.' });
-    }
+  if ( req.user.id !== req.params.id) {
+      return res.status(403).json({ error: 'Unauthorized.' });
+  }
 
-    try {
-    const { oldPassword, newPassword } = req.body;
-    const userId = req.params.id;
+  try {
+      const { newPassword } = req.body;
+      const userId = req.params.id;
 
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ error: 'Invalid user ID.' });
-    }
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+          return res.status(400).json({ error: 'Invalid user ID.' });
+      }
 
-    const user = await User.findById(userId);
+      const user = await User.findById(userId);
 
-    if (!user) {
-        return res.status(404).json({ error: 'User not found.' });
-    }
+      if (!user) {
+          return res.status(404).json({ error: 'User not found.' });
+      }
 
-    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      user.password = await bcrypt.hash(newPassword, 10);
+      await user.save();
 
-    if (!isPasswordValid) {
-        return res.status(400).json({ error: 'Invalid password.' });
-    }
-
-    user.password = await bcrypt.hash(newPassword, 10);
-    await user.save();
-
-    res.status(200).json({ message: 'Password changed successfully.' });
-    } catch (error) {
-    console.error('Error changing password:', error);
-    res.status(500).json({ error: 'Error changing password.' });
-    }
+      res.status(200).json({ message: 'Password changed successfully.' });
+  } catch (error) {
+      console.error('Error changing password:', error);
+      res.status(500).json({ error: 'Error changing password.' });
+  }
 };
+
   
 // Controller function for deleting a user
 const deleteUser = async (req, res) => {
@@ -200,10 +195,13 @@ if (!isPasswordValid) {
 console.log("User authenticated successfully.");
 
 // Create a JWT
-console.log(process.env.TOKEN_SECRET);
 const token = jwt.sign({ id: user._id, isAdministrator: user.isAdministrator}, process.env.TOKEN_SECRET, { expiresIn: '1000h' });
 
-res.json({ token });
+res.status(200).json({
+  token: token,
+  userId: user._id, // you're explicitly including the user's id in the response
+  // Add any other fields you want here
+});
 
 } catch (error) {
 console.error("Error logging in:", error);

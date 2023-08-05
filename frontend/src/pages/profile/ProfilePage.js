@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import TopBar from "../../components/topbar/TopBar";
 import Sidebar from "../../components/sidebar/SideBar";
-import Calendar from "../../components/calendar/Calendar";
 import "../../App.css";
-import StaffProfile from "./StaffProfile";
+import ProfileForm from "./ProfileForm"; // import the new component
 import { Box, Toolbar } from "@mui/material";
 
 export default function ProfilePage() {
@@ -33,7 +32,7 @@ export default function ProfilePage() {
           mobileOpen={mobileOpen}
           handleDrawerToggle={handleDrawerToggle}
         />
-        <StaffProfile />
+        <ProfileForm /> 
         <Toolbar />
       </Box>
     </Box>
