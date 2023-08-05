@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import axios from 'axios';
 
 const backendURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BACKEND_URL_DEV : process.env.REACT_APP_BACKEND_URL_PROD;
+console.log(backendURL);
 
 const LoginFormContainer = styled(Box)({
   display: "flex",
