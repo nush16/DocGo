@@ -73,13 +73,7 @@ const TopBar = ({
         <div>
           <StyledTypography variant="h6">{title}</StyledTypography>
         </div>
-        {showNotification && (
-          <IconButton color="inherit">
-            {" "}
-            {/* Set color to "inherit" */}
-            <NotificationsNoneIcon />
-          </IconButton>
-        )}
+
         {buttonLabel && (
           <StyledButton color="inherit" component={Link} to={link}>
             {buttonLabel}

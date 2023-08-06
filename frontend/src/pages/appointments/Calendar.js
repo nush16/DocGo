@@ -102,6 +102,29 @@ const AppointmentCalendar = () => {
       console.error("Error creating appointment:", error);
     }
   };
+
+  const updateAppointment = async (appointment, token) => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+      const body = JSON.stringify({
+        practitioner: appointment.doctor,
+        type: appointment.type,
+        patient: appointment.patient,
+        startTime: appointment.start,
+        endTime: appointment.end,
+        note: appointment.notes,
+      });
+      const response = await axios.put(`${backendURL}/appointments/${appointment.id}`, body, config);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating appointment:", error);
+    }
+  };
   
 
   //Load Appointments from the Server
@@ -155,7 +178,7 @@ const AppointmentCalendar = () => {
   };
   
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Check if the appointment start and end times are within working hours (8am to 5pm)
     const startHour = editedAppointment.start.getHours();
     const endHour = editedAppointment.end.getHours();
@@ -167,14 +190,18 @@ const AppointmentCalendar = () => {
     }
 
     if (editedAppointment && editedAppointment.id) {
-      setAppointments((prevAppointments) => {
-        const updatedAppointments = prevAppointments.map((appointment) =>
-          appointment.id === editedAppointment.id
-            ? editedAppointment
-            : appointment
-        );
-        return updatedAppointments;
-      });
+      const updatedAppointment = await updateAppointment(editedAppointment, token);
+      if (updatedAppointment) {
+        setAppointments((prevAppointments) => {
+          const updatedAppointments = prevAppointments.map((appointment) =>
+            appointment.id === editedAppointment.id ? { ...updatedAppointment, /* additional properties */ } : appointment
+          );
+          return updatedAppointments;
+        });
+        alert("Appointment updated successfully!");
+      } else {
+        alert("Failed to update appointment. Please try again.");
+      }
     } else {
       createAppointment(editedAppointment, token, setAppointments);
     }
