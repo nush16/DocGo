@@ -3,7 +3,7 @@ import { AuthContext } from '../../AuthContext';
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
-import { Button, Modal as MuiModal, TextField, MenuItem } from "@mui/material";
+import { Button, Modal as MuiModal, TextField, MenuItem, Autocomplete, } from "@mui/material";
 import { Box } from "@mui/system";
 import axios from '../../axiosConfig';
 
@@ -25,6 +25,7 @@ const formatEventTitle = (event) => {
 
 const AppointmentCalendar = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [patients, setPatients] = useState([]);
   const { token } = useContext(AuthContext);
   const [editedAppointment, setEditedAppointment] = useState(null);
   const [appointments, setAppointments] = useState([]);
@@ -41,8 +42,19 @@ const AppointmentCalendar = () => {
     setEditedAppointment({ ...event });
   };
 
+// Function to fetch patients
+const fetchPatients = async () => {
+  try {
+    const response = await axios.get(`${backendURL}/patients`, { headers: { Authorization: `Bearer ${token}` } });
+    setPatients(response.data);
+  } catch (error) {
+    console.error("Failed to fetch patients:", error);
+  }
+};
+
   //Load Appointments from the Server
   useEffect(() => {
+    fetchPatients();
     const config = {
       headers: {
         Authorization: `Bearer ${token}`, // Attach the JWT token as a header
@@ -200,12 +212,20 @@ const AppointmentCalendar = () => {
           )}
           {editedAppointment && (
             <div>
-              <TextField
-                label="Patient"
-                value={editedAppointment.patient}
+              <Autocomplete
+                options={patients}
+                getOptionLabel={(option) => `${option.first_name} ${option.last_name} - ${option.email}`}
                 fullWidth
-                sx={{ mb: 2 }}
-                onChange={(e) => handleFormChange("patient", e.target.value)}
+                value={editedAppointment ? patients.find(patient => patient._id === editedAppointment.patient) : null}
+                onChange={(_, newValue) => handleFormChange("patient", newValue ? newValue._id : "")}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Patient"
+                    fullWidth
+                    sx={{ mb: 2 }}
+                  />
+                )}
               />
               <TextField
                 label="Doctor"
