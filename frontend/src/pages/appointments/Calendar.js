@@ -88,8 +88,15 @@ const AppointmentCalendar = () => {
       });
       console.log("Request Body:", body);
       const response = await axios.post(`${backendURL}/appointments`, body, config);
+      const newAppointment = {
+        ...response.data,
+        id: response.data._id, // Assuming the new ID is in the response data, adjust as needed
+        title: `${response.data.practitioner.first_name} ${response.data.practitioner.last_name} ${response.data.type} with ${response.data.patient.first_name} ${response.data.patient.last_name}`,
+        start: new Date(response.data.startTime),
+        end: new Date(response.data.endTime),
+      };
       
-      setAppointments((prevAppointments) => [...prevAppointments, response.data]);
+      setAppointments((prevAppointments) => [...prevAppointments, newAppointment]);
       alert("Appointment created successfully!");
     } catch (error) {
       console.error("Error creating appointment:", error);
@@ -261,8 +268,9 @@ const AppointmentCalendar = () => {
               <Autocomplete
                 options={patients}
                 getOptionLabel={(option) => `${option.first_name} ${option.last_name} - ${option.email}`}
+                defaultValue={null}
                 fullWidth
-                value={editedAppointment ? patients.find(patient => patient._id === editedAppointment.patient) : null}
+                value={editedAppointment ? patients.find(patient => patient._id === editedAppointment.patient._id) : null}
                 onChange={(_, newValue) => handleFormChange("patient", newValue ? newValue._id : "")}
                 renderInput={(params) => (
                   <TextField
@@ -275,8 +283,8 @@ const AppointmentCalendar = () => {
               />
               <Autocomplete
                 options={practitioners}
-                getOptionLabel={(option) => `${option.first_name} ${option.last_name} (${option.email})`}
-                value={practitioners.find((practitioner) => practitioner.email === editedAppointment.doctor)}
+                getOptionLabel={(option) => `${option.first_name} ${option.last_name} - ${option.email}`}
+                value={practitioners.find((practitioner) => practitioner._id === editedAppointment.practitioner._id)}
                 onChange={(event, newValue) =>
                   handleFormChange("doctor", newValue ? newValue._id : "")
                 }
