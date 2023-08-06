@@ -18,14 +18,23 @@ const AppointmentCalendar = () => {
   const [appointments, setAppointments] = useState([]);
   const [calendarKey, setCalendarKey] = useState(0);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [isAddAppointmentModalOpen, setAddAppointmentModalOpen] =
-    useState(false);
+  const [isAddAppointmentModalOpen, setAddAppointmentModalOpen] =useState(false);
+  const modalTitle = isAddAppointmentModalOpen ? "Create Appointment" : "Edit Appointment";
   const backendURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BACKEND_URL_DEV : process.env.REACT_APP_BACKEND_URL_PROD;
 
   const handleCellClick = (event) => {
+    console.log("Clicked event details:", event);
     setSelectedAppointment(event);
     setEditedAppointment({ ...event });
   };
+
+  const events = appointments.map((appointment) => ({
+    ...appointment,
+    id: appointment._id,
+    title: `${appointment.practitioner.first_name} ${appointment.practitioner.last_name} ${appointment.type} with ${appointment.patient.first_name} ${appointment.patient.last_name}`, // Adjust according to your data structure
+    start: new Date(appointment.startTime),
+    end: new Date(appointment.endTime),
+  }));
 
   // Function to fetch patients
   const fetchPatients = async () => {
@@ -99,11 +108,6 @@ const AppointmentCalendar = () => {
     setCalendarKey((prevKey) => prevKey + 1);
   }, [appointments]);
 
-  const events = appointments.map((appointment) => ({
-    title: `${appointment.type} with ${appointment.patient.first_name}`, // Adjust according to your data structure
-    start: new Date(appointment.startTime),
-    end: new Date(appointment.endTime),
-  }));
 
 
   const handleCloseModal = () => {
@@ -118,7 +122,7 @@ const AppointmentCalendar = () => {
   };
 
   const handleDelete = async () => {
-    if (editedAppointment && editedAppointment.id) {
+    if (editedAppointment && editedAppointment._id) {
       try {
         // Send DELETE request to the server with the appointment ID
         const response = await axios.delete(`${backendURL}/appointments/${editedAppointment.id}`, {
@@ -134,6 +138,7 @@ const AppointmentCalendar = () => {
           );
           alert("Appointment deleted successfully!");
           handleCloseModal();
+          setCalendarKey((prevKey) => prevKey + 1);
         }
       } catch (error) {
         console.error("Error deleting appointment:", error);
@@ -245,6 +250,7 @@ const AppointmentCalendar = () => {
             borderRadius: 4,
           }}
         >
+          <h2>{modalTitle}</h2>
           {errorMessage && (
             <div style={{ color: "red", marginBottom: "10px" }}>
               {errorMessage}
@@ -291,8 +297,6 @@ const AppointmentCalendar = () => {
                   <TextField {...params} label="Appointment Type" fullWidth sx={{ mb: 2 }} />
                 )}
               />
-
-
               {/* Editable Date Field */}
               <TextField
                 label="Date"
