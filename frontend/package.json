@@ -30,8 +30,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "REACT_APP_DATABASE_URL=https://docgo2-a66336156a20.herokuapp.com/ react-scripts start",
-    "start-dev": "REACT_APP_DATABASE_URL=http://localhost:3001 react-scripts start",
+  "start": "REACT_APP_BACKEND_URL_PROD=https://docgo2-a66336156a20.herokuapp.com/ react-scripts start",
+  "start-dev": "REACT_APP_BACKEND_URL_DEV=http://localhost:3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
