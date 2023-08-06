@@ -173,9 +173,8 @@ const DataTable = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log('Server response:', response.data);
-        const newPatientId = response.data.patient._id;      
-        const newPatient = { ...response.data, id: response.data.patient._id};
+        console.log('Server response:', response.data);   
+        const newPatient = { ...response.data, id: response.data._id};
         setRows([...rows, newPatient]);
         alert("Patient added successfully.");       
       }
