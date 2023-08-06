@@ -284,7 +284,7 @@ const AppointmentCalendar = () => {
               <Autocomplete
                 options={practitioners}
                 getOptionLabel={(option) => `${option.first_name} ${option.last_name} - ${option.email}`}
-                value={practitioners.find((practitioner) => practitioner._id === editedAppointment.practitioner._id)}
+                value={practitioners.find((practitioner) => practitioner.id === editedAppointment.doctor)}
                 onChange={(event, newValue) =>
                   handleFormChange("doctor", newValue ? newValue._id : "")
                 }
