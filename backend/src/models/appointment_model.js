@@ -1,12 +1,5 @@
 const mongoose = require("mongoose");
 
-//const AppointmentType = Object.freeze({
-//    FirstAppointment: "First Appointment",
-//    StandardAppointment: "Standard Appointment",
-//    LongAppointment: "Long Appointment",
-//    FollowUpAppointment: "Follow up Appointment",
-//});
-
 const AppointmentSchema = new mongoose.Schema({
   practitioner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Reference to the User model
   type: { type: String, required: true },

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import TopBar from "../../components/topbar/TopBar";
 import Sidebar from "../../components/sidebar/SideBar";
-import Calendar from "../../components/calendar/Calendar";
 import "../../App.css";
 import { Box, Toolbar } from "@mui/material";
 import PatientStickyHeadTable from "./PatientTable";

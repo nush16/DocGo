@@ -1,67 +1,72 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext} from "react";
+import { AuthContext } from '../../AuthContext';
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
-import { Button, Modal as MuiModal, TextField } from "@mui/material";
+import { Button, Modal as MuiModal, TextField, MenuItem } from "@mui/material";
 import { Box } from "@mui/system";
+import axios from '../../axiosConfig';
 
 const localizer = momentLocalizer(moment);
 
-const initialAppointments = [
-  {
-    id: 1,
-    title: "Routine checkup",
-    start: new Date(2023, 7, 2, 10, 0),
-    end: new Date(2023, 7, 2, 12, 0),
-    patient: "John Doe",
-    doctor: "Dr. Smith",
-    notes: "Routine checkup",
-  },
-  {
-    id: 2,
-    title: "Routine checkup",
-    start: new Date(2023, 7, 3, 14, 0),
-    end: new Date(2023, 7, 3, 16, 0),
-    patient: "Jane Smith",
-    doctor: "Dr. Johnson",
-    notes: "Follow-up appointment",
-  },
-  // Add more appointments as needed
-];
-
+//Event Format Functionality
 const AppointmentEvent = ({ event }) => (
   <span>
-    <strong>{event.notes}</strong>
+    <strong>{formatEventTitle(event)}</strong>
     <br />
-    <em>{event.patient}</em>
+    <em>{event.doctor}</em>
   </span>
 );
 
+const formatEventTitle = (event) => {
+  return `${event.type}: ${event.patient}`;
+};
+
+
 const AppointmentCalendar = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const { token } = useContext(AuthContext);
   const [editedAppointment, setEditedAppointment] = useState(null);
-  const [appointments, setAppointments] = useState(initialAppointments);
+  const [appointments, setAppointments] = useState([]);
   const [calendarKey, setCalendarKey] = useState(0);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [showOverlapError, setShowOverlapError] = useState(false);
   const [isAddAppointmentModalOpen, setAddAppointmentModalOpen] =
     useState(false);
+  const [appointmentType, setAppointmentType] = useState("");
+
+  const backendURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BACKEND_URL_DEV : process.env.REACT_APP_BACKEND_URL_PROD;
 
   const handleCellClick = (event) => {
     setSelectedAppointment(event);
     setEditedAppointment({ ...event });
   };
 
+  //Load Appointments from the Server
+  useEffect(() => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`, // Attach the JWT token as a header
+      },
+    };
+  
+    axios.get(`${backendURL}/appointment`, config)
+      .then((response) => setAppointments(response.data))
+      .catch((error) => console.error("Error fetching appointments:", error));
+  }, [token]);  // Depend on the token  
+
+  useEffect(() => {
+    setCalendarKey((prevKey) => prevKey + 1);
+  }, [appointments]);
+
+
   const handleCloseModal = () => {
     setSelectedAppointment(null);
     setEditedAppointment(null);
-    setShowOverlapError(false); // Reset the overlap error state
     setErrorMessage(null); // Reset the error message
     setAddAppointmentModalOpen(false); // Set the state to false to close the modal
   };
 
   const setError = (message) => {
-    setShowOverlapError(false); // Reset overlap error state when setting another error
     setErrorMessage(message);
   };
 
@@ -87,28 +92,6 @@ const AppointmentCalendar = () => {
       return;
     }
 
-    // Check for overlapping appointments
-    const isOverlapping = appointments.some((appointment) => {
-      // Skip the current edited appointment during the check
-      if (editedAppointment && editedAppointment.id === appointment.id) {
-        return false;
-      }
-
-      return (
-        (editedAppointment.start >= appointment.start &&
-          editedAppointment.start < appointment.end) ||
-        (editedAppointment.end > appointment.start &&
-          editedAppointment.end <= appointment.end) ||
-        (editedAppointment.start <= appointment.start &&
-          editedAppointment.end >= appointment.end)
-      );
-    });
-
-    if (isOverlapping) {
-      setShowOverlapError(true);
-      return;
-    }
-
     if (editedAppointment && editedAppointment.id) {
       setAppointments((prevAppointments) => {
         const updatedAppointments = prevAppointments.map((appointment) =>
@@ -119,14 +102,13 @@ const AppointmentCalendar = () => {
         return updatedAppointments;
       });
     } else {
-      // This is a new appointment, so add it to the list
+      // This is a new appointment, so add it to the list with the appointment type
       setAppointments((prevAppointments) => [
         ...prevAppointments,
-        { ...editedAppointment, id: Date.now() }, // Generate a unique ID for new appointment
+        { ...editedAppointment, id: Date.now(), type: appointmentType }, // Include the appointment type
       ]);
     }
 
-    setShowOverlapError(false); // Reset overlap error state when appointment is successfully added/updated
     handleCloseModal();
     setAddAppointmentModalOpen(false);
   };
@@ -142,10 +124,6 @@ const AppointmentCalendar = () => {
     setEditedAppointment(selectedAppointment);
   };
 
-  useEffect(() => {
-    setCalendarKey((prevKey) => prevKey + 1);
-  }, [appointments]);
-
   const handleAddAppointment = () => {
     // Set the editedAppointment state to a new empty appointment object
     const newAppointment = {
@@ -158,6 +136,7 @@ const AppointmentCalendar = () => {
       notes: "",
     };
     setEditedAppointment(newAppointment);
+    setAppointmentType(""); // Set the appointment type to an empty string
     setAddAppointmentModalOpen(true);
   };
 
@@ -166,7 +145,10 @@ const AppointmentCalendar = () => {
       <Calendar
         key={calendarKey}
         localizer={localizer}
-        events={appointments}
+        events={appointments.map((appointment) => ({
+          ...appointment,
+          title: formatEventTitle(appointment),
+        }))}
         startAccessor="start"
         endAccessor="end"
         style={{ height: 700 }}
@@ -180,10 +162,19 @@ const AppointmentCalendar = () => {
           event: AppointmentEvent,
         }}
       />
-      <Button variant="contained" onClick={handleAddAppointment}>
-        Add Appointment
-      </Button>
-
+      <div>
+        <Button
+          variant="contained"
+          onClick={handleAddAppointment}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "10px",
+          }}
+        >
+          Add Appointment
+        </Button>
+      </div>
       <MuiModal
         open={isAddAppointmentModalOpen || selectedAppointment !== null}
         onClose={handleCloseModal}
@@ -207,11 +198,6 @@ const AppointmentCalendar = () => {
               {errorMessage}
             </div>
           )}
-          {showOverlapError && (
-            <div style={{ color: "red", marginBottom: "10px" }}>
-              Another appointment is already booked during this time slot.
-            </div>
-          )}
           {editedAppointment && (
             <div>
               <TextField
@@ -228,6 +214,23 @@ const AppointmentCalendar = () => {
                 sx={{ mb: 2 }}
                 onChange={(e) => handleFormChange("doctor", e.target.value)}
               />
+              <TextField
+                select
+                label="Appointment Type"
+                value={appointmentType}
+                fullWidth
+                sx={{ mb: 2 }}
+                onChange={(e) => setAppointmentType(e.target.value)}
+              >
+                <MenuItem value="first appointment">First Appointment</MenuItem>
+                <MenuItem value="standard appointment">
+                  Standard Appointment
+                </MenuItem>
+                <MenuItem value="long appointment">Long Appointment</MenuItem>
+                <MenuItem value="follow up appointment">
+                  Follow-up Appointment
+                </MenuItem>
+              </TextField>
               {/* Editable Date Field */}
               <TextField
                 label="Date"

@@ -191,7 +191,6 @@ const DataTable = () => {
             Authorization: `Bearer ${token}`, // Attach the JWT token as a header
           },
         };
-
         // Get the data from the backend
         const response = await axios.get(`${backendURL}/users`, config);
         

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Topbar from "../../components/topbar/TopBar";
 import Sidebar from "../../components/sidebar/SideBar";
-import AppointmentCalendar from "../../components/calendar/Calendar";
+import DayViewSubdivided from "./Calendar";
 import "../../App.css";
 import { Box, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 
@@ -43,7 +43,7 @@ export default function AppointmentPage() {
           handleDrawerToggle={handleDrawerToggle}
         />
       </Box>
-      <AppointmentCalendar />
+      <DayViewSubdivided />
     </Box>
   );
 }
